@@ -1,0 +1,120 @@
+{
+  "source": "/Users/jiubao/Desktop/codex_workplace/auto_generate_image/CartoonWorld/MediaImportView.swift",
+  "tables": {
+    "Localizable": [
+      {
+        "comment": "",
+        "key": "地点",
+        "location": {
+          "startingColumn": 24,
+          "startingLine": 28
+        }
+      },
+      {
+        "comment": "",
+        "key": "素材标题，例如：雨后的外滩",
+        "location": {
+          "startingColumn": 27,
+          "startingLine": 35
+        }
+      },
+      {
+        "comment": "",
+        "key": "把真实素材变成地图积木",
+        "location": {
+          "startingColumn": 26,
+          "startingLine": 21
+        }
+      },
+      {
+        "comment": "",
+        "key": "选择上海、东京或香港地点后上传照片或视频。当前版本会在本地生成卡通调色板和贡献状态，后续可接入生成式卡通化服务。",
+        "location": {
+          "startingColumn": 26,
+          "startingLine": 23
+        }
+      },
+      {
+        "comment": "",
+        "key": "%@ · %@ · %@",
+        "location": {
+          "startingColumn": 30,
+          "startingLine": 30
+        }
+      },
+      {
+        "comment": "",
+        "key": "选择照片或视频",
+        "location": {
+          "startingColumn": 51,
+          "startingLine": 41
+        }
+      },
+      {
+        "comment": "",
+        "key": "重新选择素材",
+        "location": {
+          "startingColumn": 77,
+          "startingLine": 41
+        }
+      },
+      {
+        "comment": "",
+        "key": "卡通化并融入地图",
+        "location": {
+          "startingColumn": 27,
+          "startingLine": 77
+        }
+      },
+      {
+        "comment": "",
+        "key": "上传后会生成一张卡通缩略图，并作为该地点的世界资产。",
+        "location": {
+          "startingColumn": 39,
+          "startingLine": 126
+        }
+      },
+      {
+        "comment": "",
+        "key": "还没有素材",
+        "location": {
+          "startingColumn": 21,
+          "startingLine": 124
+        }
+      },
+      {
+        "comment": "",
+        "key": "卡通化预览",
+        "location": {
+          "startingColumn": 23,
+          "startingLine": 97
+        }
+      },
+      {
+        "comment": "",
+        "key": "世界资产队列",
+        "location": {
+          "startingColumn": 18,
+          "startingLine": 137
+        }
+      },
+      {
+        "comment": "",
+        "key": "还没有上传素材。第一条贡献会出现在地图地点和数字人生活流里。",
+        "location": {
+          "startingColumn": 22,
+          "startingLine": 141
+        }
+      },
+      {
+        "comment": "",
+        "key": "%@ · %@",
+        "location": {
+          "startingColumn": 22,
+          "startingLine": 189
+        }
+      }
+    ]
+  },
+  "version": 1
+}

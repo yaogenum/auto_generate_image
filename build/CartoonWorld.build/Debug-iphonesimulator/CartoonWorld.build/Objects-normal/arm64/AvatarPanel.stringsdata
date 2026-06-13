@@ -1,0 +1,24 @@
+{
+  "source": "/Users/jiubao/Desktop/codex_workplace/auto_generate_image/CartoonWorld/AvatarPanel.swift",
+  "tables": {
+    "Localizable": [
+      {
+        "comment": "",
+        "key": "%@ 在 %@",
+        "location": {
+          "startingColumn": 26,
+          "startingLine": 15
+        }
+      },
+      {
+        "comment": "",
+        "key": "数字人头像",
+        "location": {
+          "startingColumn": 29,
+          "startingLine": 89
+        }
+      }
+    ]
+  },
+  "version": 1
+}

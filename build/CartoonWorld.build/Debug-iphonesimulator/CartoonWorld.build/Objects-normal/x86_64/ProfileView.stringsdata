@@ -1,0 +1,96 @@
+{
+  "source": "/Users/jiubao/Desktop/codex_workplace/auto_generate_image/CartoonWorld/ProfileView.swift",
+  "tables": {
+    "Localizable": [
+      {
+        "comment": "",
+        "key": "注册数字人身份",
+        "location": {
+          "startingColumn": 26,
+          "startingLine": 18
+        }
+      },
+      {
+        "comment": "",
+        "key": "名字",
+        "location": {
+          "startingColumn": 31,
+          "startingLine": 21
+        }
+      },
+      {
+        "comment": "",
+        "key": "身份，例如：城市建筑师",
+        "location": {
+          "startingColumn": 31,
+          "startingLine": 23
+        }
+      },
+      {
+        "comment": "",
+        "key": "常驻区域",
+        "location": {
+          "startingColumn": 31,
+          "startingLine": 25
+        }
+      },
+      {
+        "comment": "",
+        "key": "生活宣言",
+        "location": {
+          "startingColumn": 31,
+          "startingLine": 27
+        }
+      },
+      {
+        "comment": "",
+        "key": "保存身份",
+        "location": {
+          "startingColumn": 31,
+          "startingLine": 40
+        }
+      },
+      {
+        "comment": "",
+        "key": "重新分配游客身份",
+        "location": {
+          "startingColumn": 31,
+          "startingLine": 49
+        }
+      },
+      {
+        "comment": "",
+        "key": "%@ · %@",
+        "location": {
+          "startingColumn": 22,
+          "startingLine": 83
+        }
+      },
+      {
+        "comment": "",
+        "key": "已注册",
+        "location": {
+          "startingColumn": 55,
+          "startingLine": 74
+        }
+      },
+      {
+        "comment": "",
+        "key": "游客",
+        "location": {
+          "startingColumn": 69,
+          "startingLine": 74
+        }
+      },
+      {
+        "comment": "",
+        "key": "世界进度",
+        "location": {
+          "startingColumn": 18,
+          "startingLine": 103
+        }
+      }
+    ]
+  },
+  "version": 1
+}
