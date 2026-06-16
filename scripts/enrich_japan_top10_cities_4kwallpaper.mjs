@@ -174,6 +174,29 @@ function parseDetail(html, detailUrl) {
   return { fullUrl, title, keywords: alt, detailUrl };
 }
 
+function isCityRelevant(detail, target) {
+  const text = `${detail?.keywords || ""} ${detail?.title || ""} ${detail?.detailUrl || ""}`.toLowerCase();
+  const banned = [
+    "nba",
+    "bryant",
+    "lamborghini",
+    "supercar",
+    "sports",
+    "anime",
+    "pokemon",
+    "motor",
+    "tesla",
+    "ferrari",
+  ];
+  if (banned.some((word) => text.includes(word))) return false;
+  const queryTokens = (target.query || "").toLowerCase().split(/\s+/).filter(Boolean);
+  const cityTokens = [target.city.toLowerCase(), ...queryTokens];
+  const hasCityToken = cityTokens.some((token) => text.includes(token));
+  const hasJapanContext = /japan|东京|京都|大阪|名古屋|札幌|横滨|福冈|神户|广岛|仙台|香港|新加坡/.test(text);
+  if (!hasCityToken) return false;
+  return hasJapanContext || (detail?.detailUrl || "").includes("japan");
+}
+
 async function parseMetadata() {
   try {
     const raw = await fs.readFile(metadataPath, "utf8");
@@ -321,6 +344,7 @@ async function main() {
       try {
         const detailHtml = await httpText(page.detailUrl);
         const detail = parseDetail(detailHtml, page.detailUrl);
+        if (!isCityRelevant(detail, target)) continue;
         if (!detail?.fullUrl) continue;
         const fullUrl = detail.fullUrl;
         const buf = await httpBuffer(fullUrl);
