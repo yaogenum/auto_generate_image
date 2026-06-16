@@ -1,7 +1,7 @@
 import fs from "node:fs/promises";
 import path from "node:path";
 import crypto from "node:crypto";
-import { execSync } from "node:child_process";
+import { execSync, execFileSync } from "node:child_process";
 
 const ROOT = process.cwd();
 const sourceDir = path.join(ROOT, "images", "source");
@@ -59,43 +59,50 @@ function sleep(ms) {
 }
 
 async function httpText(url) {
-  const ctl = new AbortController();
-  const timer = setTimeout(() => ctl.abort(), 25000);
   try {
-    const res = await fetch(url, {
-      headers: { "User-Agent": USER_AGENT },
-      redirect: "follow",
-      signal: ctl.signal,
-    });
-    if (!res.ok) throw new Error(`fetch_${res.status}`);
-    return await res.text();
-  } finally {
-    clearTimeout(timer);
+    return execFileSync(
+      "curl",
+      [
+        "-LfsS",
+        "--max-time",
+        "40",
+        "--connect-timeout",
+        "12",
+        "-A",
+        USER_AGENT,
+        url,
+      ],
+      { encoding: "utf8", maxBuffer: 1024 * 1024 * 64 },
+    );
+  } catch {
+    return "";
   }
 }
 
 async function httpBuffer(url) {
-  const ctl = new AbortController();
-  const timer = setTimeout(() => ctl.abort(), 40000);
   try {
-    const res = await fetch(url, {
-      headers: { "User-Agent": USER_AGENT },
-      redirect: "follow",
-      signal: ctl.signal,
-    });
-    if (!res.ok) throw new Error(`download_${res.status}`);
-    const ct = String(res.headers.get("content-type") || "").toLowerCase();
-    if (!ct.includes("image")) throw new Error(`ct_${ct}`);
-    const arr = new Uint8Array(await res.arrayBuffer());
-    return Buffer.from(arr);
-  } finally {
-    clearTimeout(timer);
+    return execFileSync(
+      "curl",
+      [
+        "-LfsS",
+        "--max-time",
+        "60",
+        "--connect-timeout",
+        "12",
+        "-A",
+        USER_AGENT,
+        url,
+      ],
+      { encoding: "buffer", maxBuffer: 1024 * 1024 * 128 },
+    );
+  } catch {
+    return Buffer.alloc(0);
   }
 }
 
 function parseSearch(html) {
   const itemRegex =
-    /<a[^>]+class="[^"]*wallpapers__canvas_image[^"]*"[^>]+href="([^"]+\.html)"[\s\S]*?<img[^>]+src="([^"]+\.jpg)"[^>]+alt="([^"]+)"[\s\S]*?<\/a>/g;
+    /class="[^"]*wallpapers__canvas_image[^"]*"[\s\S]*?href="([^"]+\.html)"[\s\S]*?<img[^>]*src="([^"]+\.jpg)"[^>]*alt="([^"]+)"/g;
   const out = [];
   let m;
   while ((m = itemRegex.exec(html)) !== null) {
@@ -111,12 +118,59 @@ function parseSearch(html) {
   return Array.from(dedup.values());
 }
 
+function absUrl(href) {
+  if (!href) return "";
+  if (href.startsWith("http://") || href.startsWith("https://")) return href;
+  if (href.startsWith("//")) return `https:${href}`;
+  if (href.startsWith("/")) return `${BASE}${href}`;
+  return `${BASE}/${href}`;
+}
+
+function pickLargestWallUrlFromList(urls) {
+  let best = "";
+  let bestScore = 0;
+  for (const href of urls) {
+    const m = href.match(/-(\d+)x(\d+)-\d+\.jpg$/i);
+    const area = m ? Number(m[1]) * Number(m[2]) : 0;
+    if (area > bestScore) {
+      bestScore = area;
+      best = href;
+    }
+  }
+  return best || urls[0] || "";
+}
+
 function parseDetail(html, detailUrl) {
-  const m = html.match(/id="resolution"[^>]+href="([^"]+)"[^>]*>([^<]*)<\/a>/i);
+  const candidates = [];
+
+  const exactCandidates = [
+    html.match(/<a[^>]*\bid=["']resolution["'][^>]*\shref=["']([^"']+)["']/i),
+    html.match(/<a[^>]*\bclass=["'][^"']*\bcurrent\b[^"']*["'][^>]*\shref=["']([^"']+)["']/i),
+    html.match(/<a[^>]*\bclass=["'][^"']*["'][^>]*\shref=["']([^"']*\/images\/wallpapers\/[^"']+)["'][^>]*\b(Desktop|Original|resolution|Download)/i),
+    html.match(/<a[^>]*\bhref=["']([^"']+\/images\/wallpapers\/[^"']+)["'][^>]*\b(?:Original|Download|resolution|1920x1080|2560x1440)/i),
+    html.match(/<meta\s+itemprop=["']contentUrl["']\s+href=["']([^"']+)["']/i),
+  ];
+
+  for (const m of exactCandidates) {
+    if (m?.[1]) candidates.push(absUrl(m[1]));
+  }
+
+  const listMatches = [
+    ...html.matchAll(/href=["']([^"']*\/images\/wallpapers\/[^"']+)["']/gi),
+    ...html.matchAll(/href=["']([^"']*\/images\/walls\/[^"']+)["']/gi),
+  ];
+  for (const m of listMatches) {
+    candidates.push(absUrl(m[1]));
+  }
+
+  const wallCandidates = candidates
+    .filter((it) => /\/images\/wallpapers\//.test(it))
+    .filter((it, i, arr) => arr.indexOf(it) === i);
+  const wallUrl = pickLargestWallUrlFromList(wallCandidates);
+  const fallback = candidates.filter((it) => /4kwallpapers\.com\/images\/walls\//i.test(it))[0];
+  const fullUrl = wallUrl || fallback || "";
   const alt = html.match(/meta\s+itemprop="keywords"\s+content="([^"]+)"/i)?.[1] || "";
-  if (!m?.[1]) return null;
-  const fullUrl = m[1].startsWith("http") ? m[1] : `${BASE}${m[1]}`;
-  const title = alt.split(",")[0]?.trim() || "";
+  const title = (alt || html.match(/<title[^>]*>([^<]+)<\/title>/i)?.[1] || "").split(",")[0]?.trim() || "";
   return { fullUrl, title, keywords: alt, detailUrl };
 }
 
@@ -234,6 +288,7 @@ async function main() {
   const maxAddedPerCity = 40;
 
   for (const target of TARGETS) {
+    console.log(`CITY ${target.city} start, current=${counts.get(target.city) || 0} target=${target.minimum}`);
     let need = Math.max(0, target.minimum - (counts.get(target.city) || 0));
     if (!need) continue;
     const candidatesAll = [];
@@ -312,6 +367,7 @@ async function main() {
         counts.set(target.city, (counts.get(target.city) || 0) + 1);
         added += 1;
         localNeed -= 1;
+        console.log(`+1 ${target.city} => ${fileName} (${dims}, ${fullUrl})`);
         await sleep(450);
       } catch {
         continue;

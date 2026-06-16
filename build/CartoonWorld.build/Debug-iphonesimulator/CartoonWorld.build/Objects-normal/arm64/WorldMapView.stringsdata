@@ -4,10 +4,26 @@
     "Localizable": [
       {
         "comment": "",
+        "key": "%@数字世界",
+        "location": {
+          "startingColumn": 26,
+          "startingLine": 71
+        }
+      },
+      {
+        "comment": "",
+        "key": "城市",
+        "location": {
+          "startingColumn": 28,
+          "startingLine": 83
+        }
+      },
+      {
+        "comment": "",
         "key": "探索面板",
         "location": {
           "startingColumn": 26,
-          "startingLine": 48
+          "startingLine": 122
         }
       },
       {
@@ -15,7 +31,7 @@
         "key": "收起",
         "location": {
           "startingColumn": 45,
-          "startingLine": 62
+          "startingLine": 136
         }
       },
       {
@@ -23,7 +39,7 @@
         "key": "展开",
         "location": {
           "startingColumn": 56,
-          "startingLine": 62
+          "startingLine": 136
         }
       },
       {
@@ -31,7 +47,7 @@
         "key": "%@ · %@",
         "location": {
           "startingColumn": 22,
-          "startingLine": 97
+          "startingLine": 171
         }
       },
       {
@@ -39,7 +55,7 @@
         "key": "%@ · 探索 %lld%%",
         "location": {
           "startingColumn": 22,
-          "startingLine": 100
+          "startingLine": 174
         }
       },
       {
@@ -47,7 +63,7 @@
         "key": "城市",
         "location": {
           "startingColumn": 20,
-          "startingLine": 109
+          "startingLine": 199
         }
       },
       {
@@ -55,7 +71,7 @@
         "key": "模式",
         "location": {
           "startingColumn": 20,
-          "startingLine": 116
+          "startingLine": 206
         }
       },
       {
@@ -63,7 +79,7 @@
         "key": "%@数字世界",
         "location": {
           "startingColumn": 22,
-          "startingLine": 136
+          "startingLine": 226
         }
       },
       {
@@ -71,7 +87,7 @@
         "key": "%@ · 当前 %@",
         "location": {
           "startingColumn": 22,
-          "startingLine": 138
+          "startingLine": 228
         }
       },
       {
@@ -79,7 +95,7 @@
         "key": "追踪目标：%@",
         "location": {
           "startingColumn": 22,
-          "startingLine": 166
+          "startingLine": 256
         }
       },
       {
@@ -87,7 +103,7 @@
         "key": "%@ · %lld 个素材",
         "location": {
           "startingColumn": 22,
-          "startingLine": 354
+          "startingLine": 458
         }
       }
     ]
