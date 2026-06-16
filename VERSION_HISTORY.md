@@ -283,3 +283,26 @@ Added Hong Kong as the third supported city and continued UI cleanup before anot
 - `./scripts/build_ios.sh` succeeded.
 - `SIMCTL_TIMEOUT=20 ./scripts/run_ios_sim.sh` succeeded and launched the app in the booted iPhone 16e Simulator.
 - Captured visual QA screenshot: `artifacts/cartoonworld-hongkong-open-v3.png`.
+
+## 0.2.5 - 2026-06-14
+
+### Scope
+
+Reviewed the app shell and world-screen interaction after the three-city expansion, then improved first-screen controls and SwiftUI state handling.
+
+### Changed
+
+- Added a compact world HUD over the map so the hidden navigation bar no longer removes all screen identity.
+- Added quick city selection from the HUD without requiring the exploration panel to expand.
+- Added one-tap display-mode switching between `真实3D` and `卡通沙盘` from the HUD.
+- Compressed the HUD after visual review so it keeps quick controls without covering as much of the map.
+- Persisted the last selected city and display mode with `AppStorage`.
+- Reduced repeated contribution filtering in the world screen by precomputing place contribution counts once per render.
+- Kept the bottom exploration panel collapsed by default and reserved expanded mode for deeper controls, quest tracking, place chips, and avatar status.
+
+### Verification
+
+- `./scripts/build_ios.sh` succeeded.
+- `SIMCTL_TIMEOUT=20 ./scripts/run_ios_sim.sh` succeeded and launched the app in the booted iPhone Simulator.
+- Initial screenshot immediately after launch was blank white while the app was still presenting its first frame, so it was rejected as QA evidence.
+- Captured accepted visual QA screenshot after the map rendered: `artifacts/cartoonworld-025-hud-compact.png`.

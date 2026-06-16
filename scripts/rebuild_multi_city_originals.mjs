@@ -6,16 +6,23 @@ const rootDir = "/Users/jiubao/Desktop/codex_workplace/auto_generate_image";
 const sourceDir = path.join(rootDir, "images", "source");
 const metadataPath = path.join(rootDir, "images", "素材元数据.json");
 const htmlPath = path.join(sourceDir, "tokyo_assets.html");
-const targetCount = 50;
+const targetCount = 100;
 const minEdge = 1200;
 
 const plans = [
-  { city: "香港", scene: "维港天际线", feature: "海港夜景,城市营销", query: "\"Victoria Harbour\" Hong Kong skyline night", desired: 4 },
-  { city: "香港", scene: "香港城市街景", feature: "繁华街区,旅行宣传", query: "\"Hong Kong\" skyline street tram", desired: 3 },
-  { city: "新加坡", scene: "滨海湾", feature: "城市地标,宣传主视觉", query: "\"Marina Bay\" Singapore skyline night", desired: 4 },
-  { city: "新加坡", scene: "新加坡地标", feature: "旅行热点,城市度假", query: "\"Gardens by the Bay\" Singapore OR \"Merlion\" Singapore", desired: 3 },
-  { city: "香港", scene: "香港旅行热点", feature: "城市旅行,营销宣传", query: "\"Hong Kong\" tourism skyline", desired: 4 },
-  { city: "新加坡", scene: "新加坡旅行热点", feature: "城市旅行,营销宣传", query: "\"Singapore\" tourism skyline", desired: 4 },
+  { city: "大阪", scene: "地标", feature: "城市场景,文化传播", query: "\"Osaka Castle\" skyline" , desired: 6 },
+  { city: "大阪", scene: "城市夜景", feature: "夜景霓虹,城市营销", query: "\"Osaka\" city skyline night", desired: 6 },
+  { city: "名古屋", scene: "地标", feature: "城市地标,旅行宣传", query: "\"Nagoya Castle\" city", desired: 5 },
+  { city: "名古屋", scene: "商业街景", feature: "购物街区,城市热点", query: "\"Nagoya\" street shopping", desired: 4 },
+  { city: "京都", scene: "古都景观", feature: "文化旅行,历史地标", query: "\"Kyoto\" Kiyomizu-dera", desired: 6 },
+  { city: "京都", scene: "庭园与街景", feature: "传统氛围,景点宣传", query: "\"Kyoto\" Gion Arashiyama", desired: 5 },
+  { city: "札幌", scene: "城市地标", feature: "城市旅行,北境景观", query: "\"Sapporo\" skyline", desired: 5 },
+  { city: "福冈", scene: "景观", feature: "城市地标,旅游推广", query: "\"Fukuoka\" tower skyline", desired: 5 },
+  { city: "横滨", scene: "港湾夜景", feature: "海湾地标,商务出行", query: "\"Yokohama\" Minato Mirai skyline", desired: 5 },
+  { city: "神户", scene: "观景", feature: "港口夜景,旅行热点", query: "\"Kobe\" Harborland skyline", desired: 4 },
+  { city: "仙台", scene: "城市景观", feature: "城市旅游,地标宣传", query: "\"Sendai\" skyline", desired: 4 },
+  { city: "广岛", scene: "城市地标", feature: "纪念地标,历史城市", query: "\"Hiroshima\" skyline", desired: 5 },
+  { city: "那霸", scene: "海岸景观", feature: "度假城市,海景宣传", query: "\"Naha\" Okinawa skyline", desired: 5 },
 ];
 
 function sleep(ms) {
@@ -243,6 +250,14 @@ function updateExistingItems(items) {
 }
 
 function buildHtml(items) {
+  const citySet = new Set(
+    items
+      .map((item) => String(item["场景"] || "") .split(" · ")[0]?.trim())
+      .filter((city) => city.length > 0),
+  );
+  const cityList = Array.from(citySet);
+  const heroCityText = cityList.join("、");
+
   const counts = {};
   for (const item of items) counts[item["场景"]] = (counts[item["场景"]] || 0) + 1;
 
@@ -276,7 +291,7 @@ function buildHtml(items) {
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>东京 / 香港 / 新加坡旅行原图库</title>
+  <title>${heroCityText || "日本重点城市"}旅行原图库</title>
   <style>
     :root{--bg:#fff8ef;--panel:rgba(255,255,255,.86);--line:rgba(148,85,0,.12);--text:#2e2016;--muted:#725f4f;--accent:#c2410c;--accent2:#ea580c;--shadow:0 18px 50px rgba(66,32,6,.12);font-family:"Noto Sans SC","PingFang SC",Arial,sans-serif}
     *{box-sizing:border-box}
@@ -317,11 +332,11 @@ function buildHtml(items) {
   <main class="shell">
     <section class="hero">
       <span class="kicker">Multi City Original Library</span>
-      <h1>东京 / 香港 / 新加坡旅行原图库</h1>
-      <p>保留唯一原图，不做额外尺寸裁剪。当前库包含东京、香港、新加坡三地旅行营销素材，图片均存储在本地 <code>images/source</code> 并可直接预览。</p>
+      <h1>${heroCityText || "日本重点城市"}旅行原图库</h1>
+      <p>保留唯一原图，不做额外尺寸裁剪。当前库覆盖 ${cityList.length} 个城市的旅行营销素材，图片均存储在本地 <code>images/source</code> 并可直接预览。</p>
       <div class="stats">
         <div class="stat"><strong>${items.length}</strong><span>原图总数</span></div>
-        <div class="stat"><strong>3</strong><span>覆盖城市</span></div>
+        <div class="stat"><strong>${citySet.size}</strong><span>覆盖城市</span></div>
         <div class="stat"><strong>0</strong><span>额外裁剪图</span></div>
       </div>
     </section>

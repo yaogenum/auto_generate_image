@@ -3,15 +3,26 @@ import SwiftUI
 
 struct WorldMapView: View {
     @Environment(WorldModel.self) private var world
-    @State private var selectedCity: WorldCity = .hongKong
-    @State private var displayMode: WorldDisplayMode = .real3D
+    @AppStorage("CartoonWorld.world.selectedCity") private var selectedCityRaw = WorldCity.hongKong.rawValue
+    @AppStorage("CartoonWorld.world.displayMode") private var displayModeRaw = WorldDisplayMode.real3D.rawValue
     @State private var isPanelExpanded = false
+
+    private var selectedCity: WorldCity {
+        WorldCity(rawValue: selectedCityRaw) ?? .hongKong
+    }
+
+    private var displayMode: WorldDisplayMode {
+        WorldDisplayMode(rawValue: displayModeRaw) ?? .real3D
+    }
 
     var body: some View {
         @Bindable var world = world
         let visiblePlaces = world.places.filter { $0.city == selectedCity }
+        let visiblePlaceIDs = Set(visiblePlaces.map(\.id))
+        let contributionCountByPlace = Dictionary(grouping: world.contributions, by: \.placeID).mapValues { $0.count }
+        let visibleContributionCount = world.contributions.filter { visiblePlaceIDs.contains($0.placeID) }.count
 
-        ZStack(alignment: .bottom) {
+        ZStack {
             Group {
                 switch displayMode {
                 case .real3D:
@@ -29,19 +40,82 @@ struct WorldMapView: View {
             }
             .ignoresSafeArea(edges: .top)
 
-            bottomPanel(visiblePlaces: visiblePlaces)
-            .padding(.horizontal, 14)
-            .padding(.bottom, 10)
+            VStack(spacing: 0) {
+                topHUD(visiblePlaces: visiblePlaces)
+                    .padding(.horizontal, 14)
+                    .padding(.top, 8)
+
+                Spacer(minLength: 0)
+
+                bottomPanel(
+                    visiblePlaces: visiblePlaces,
+                    contributionCountByPlace: contributionCountByPlace,
+                    visibleContributionCount: visibleContributionCount
+                )
+                .padding(.horizontal, 14)
+                .padding(.bottom, 10)
+            }
         }
         .onAppear {
             ensureSelection(in: visiblePlaces)
         }
-        .onChange(of: selectedCity) { _, _ in
+        .onChange(of: selectedCityRaw) { _, _ in
             ensureSelection(in: world.places.filter { $0.city == selectedCity })
         }
     }
 
-    private func bottomPanel(visiblePlaces: [WorldPlace]) -> some View {
+    private func topHUD(visiblePlaces: [WorldPlace]) -> some View {
+        HStack {
+            HStack(spacing: 8) {
+                VStack(alignment: .leading, spacing: 2) {
+                    Text("\(selectedCity.rawValue)数字世界")
+                        .font(.caption.weight(.bold))
+                    Text(world.selectedPlace.district)
+                        .font(.caption2)
+                        .foregroundStyle(.secondary)
+                        .lineLimit(1)
+                }
+
+                Divider()
+                    .frame(height: 24)
+
+                Menu {
+                    Picker("城市", selection: selectedCityBinding) {
+                        ForEach(WorldCity.allCases, id: \.self) { city in
+                            Text(city.rawValue).tag(city)
+                        }
+                    }
+                } label: {
+                    Label(selectedCity.rawValue, systemImage: "mappin.and.ellipse")
+                        .font(.caption.weight(.semibold))
+                }
+
+                Button {
+                    withAnimation(.snappy) {
+                        displayModeRaw = displayMode.toggled.rawValue
+                    }
+                } label: {
+                    Label(displayMode.shortTitle, systemImage: displayMode.symbolName)
+                        .font(.caption.weight(.semibold))
+                }
+                .buttonStyle(.borderedProminent)
+                .controlSize(.mini)
+                .tint(.mint)
+            }
+            .padding(.horizontal, 10)
+            .padding(.vertical, 6)
+            .background(.ultraThinMaterial, in: RoundedRectangle(cornerRadius: 8))
+            .shadow(color: .black.opacity(0.12), radius: 10, y: 4)
+
+            Spacer(minLength: 0)
+        }
+    }
+
+    private func bottomPanel(
+        visiblePlaces: [WorldPlace],
+        contributionCountByPlace: [String: Int],
+        visibleContributionCount: Int
+    ) -> some View {
         VStack(spacing: 10) {
             HStack(spacing: 10) {
                 if isPanelExpanded {
@@ -74,10 +148,10 @@ struct WorldMapView: View {
 
             if isPanelExpanded {
                 VStack(spacing: 12) {
-                    controlDeck(visiblePlaces: visiblePlaces)
+                    controlDeck(visiblePlaces: visiblePlaces, visibleContributionCount: visibleContributionCount)
                     worldHeader
                     questTracker
-                    placeCarousel(visiblePlaces: visiblePlaces)
+                    placeCarousel(visiblePlaces: visiblePlaces, contributionCountByPlace: contributionCountByPlace)
                     AvatarPanel()
                 }
                 .transition(.move(edge: .bottom).combined(with: .opacity))
@@ -104,16 +178,32 @@ struct WorldMapView: View {
         }
     }
 
-    private func controlDeck(visiblePlaces: [WorldPlace]) -> some View {
+    private var selectedCityBinding: Binding<WorldCity> {
+        Binding {
+            selectedCity
+        } set: { newValue in
+            selectedCityRaw = newValue.rawValue
+        }
+    }
+
+    private var displayModeBinding: Binding<WorldDisplayMode> {
+        Binding {
+            displayMode
+        } set: { newValue in
+            displayModeRaw = newValue.rawValue
+        }
+    }
+
+    private func controlDeck(visiblePlaces: [WorldPlace], visibleContributionCount: Int) -> some View {
         VStack(spacing: 10) {
-            Picker("城市", selection: $selectedCity) {
+            Picker("城市", selection: selectedCityBinding) {
                 ForEach(WorldCity.allCases, id: \.self) { city in
                     Text(city.rawValue).tag(city)
                 }
             }
             .pickerStyle(.segmented)
 
-            Picker("模式", selection: $displayMode) {
+            Picker("模式", selection: displayModeBinding) {
                 ForEach(WorldDisplayMode.allCases, id: \.self) { mode in
                     Label(mode.title, systemImage: mode.symbolName).tag(mode)
                 }
@@ -122,7 +212,7 @@ struct WorldMapView: View {
 
             HStack(spacing: 10) {
                 StatPill(title: "区域", value: "\(visiblePlaces.count)")
-                StatPill(title: "素材", value: "\(world.contributions.filter { contribution in visiblePlaces.contains { $0.id == contribution.placeID } }.count)")
+                StatPill(title: "素材", value: "\(visibleContributionCount)")
                 StatPill(title: "探索", value: "\(explorationPercent(for: visiblePlaces))%")
             }
         }
@@ -186,7 +276,7 @@ struct WorldMapView: View {
         .background(.ultraThinMaterial, in: RoundedRectangle(cornerRadius: 8))
     }
 
-    private func placeCarousel(visiblePlaces: [WorldPlace]) -> some View {
+    private func placeCarousel(visiblePlaces: [WorldPlace], contributionCountByPlace: [String: Int]) -> some View {
         ScrollView(.horizontal, showsIndicators: false) {
             HStack(spacing: 10) {
                 ForEach(visiblePlaces) { place in
@@ -198,7 +288,7 @@ struct WorldMapView: View {
                         PlaceChip(
                             place: place,
                             isSelected: place.id == world.selectedPlaceID,
-                            contributionCount: world.contributions.filter { $0.placeID == place.id }.count
+                            contributionCount: contributionCountByPlace[place.id, default: 0]
                         )
                     }
                     .buttonStyle(.plain)
@@ -239,6 +329,20 @@ private enum WorldDisplayMode: String, CaseIterable, Hashable {
         switch self {
         case .real3D: "globe.asia.australia.fill"
         case .cartoon: "sparkles"
+        }
+    }
+
+    var shortTitle: String {
+        switch self {
+        case .real3D: "3D"
+        case .cartoon: "沙盘"
+        }
+    }
+
+    var toggled: WorldDisplayMode {
+        switch self {
+        case .real3D: .cartoon
+        case .cartoon: .real3D
         }
     }
 }
