@@ -306,3 +306,69 @@ Reviewed the app shell and world-screen interaction after the three-city expansi
 - `SIMCTL_TIMEOUT=20 ./scripts/run_ios_sim.sh` succeeded and launched the app in the booted iPhone Simulator.
 - Initial screenshot immediately after launch was blank white while the app was still presenting its first frame, so it was rejected as QA evidence.
 - Captured accepted visual QA screenshot after the map rendered: `artifacts/cartoonworld-025-hud-compact.png`.
+
+## 0.2.6 - 2026-06-20
+
+### Scope
+
+Reduced persistent HUD occlusion by allowing full interface collapse after repeated user feedback about panel blocking.
+
+### Changed
+
+- Added a global map UI visibility toggle in `WorldMapView`:
+  - `收起界面`: hides all top and bottom world overlay controls in one action.
+  - `展开界面`: restores control layer from a compact floating button.
+- Kept existing bottom panel expansion (`展开`/`收起`) and city/mode controls in normal mode.
+- Reset expanded state when entering hidden mode to avoid stale panel transitions.
+
+### Notes
+
+- This change is a direct usability improvement requested from prior visual feedback about overlay obstruction.
+
+## 0.3.0 - 2026-06-20
+
+### Scope
+
+Implemented family communication and social lifecycle features in the core iOS app flow.
+
+### Changed
+
+- Added family relationship models and persistence:
+  - `FamilyMember` with contact, birthday, weekly cadence, and self identity.
+  - `FamilyMessage` and `FamilyMoment` for per-family chat logs and mapped life moments.
+  - New persisted state in `WorldModel` (`familyMembers`, `selectedFamilyMemberID`, `conversations`, `moments`).
+- Added `FamilyHubView` as the default first tab:
+  - Top horizontal contact ribbon (including `自己`) as the default entry context.
+  - Chat panel for selected member with message input.
+  - Family communication actions (语音/视频) using FaceTime when phone contact is configured.
+  - Bottom segment panel for `Moments` and `地图` to browse logs and record shared travel events.
+- Added family maintenance sheet:
+  - Create/edit/remove family members.
+  - Maintain relationship, contact, birthday, and weekly fixed-communication cadence.
+- Added startup and periodic scene hints:
+  - Birthday reminders and weekly communication reminders.
+  - Added `refreshFamilyScenePrompts()` in bootstrap flow.
+- Added app tab default switch so users open directly into family view.
+
+### Verification
+
+- `./scripts/build_ios.sh` succeeded.
+- `./scripts/run_ios_sim.sh` succeeded and launched the app on the available iOS simulator.
+- Captured visual artifact at `artifacts/cartoonworld-family-hub.png`.
+
+## 0.3.1 - 2026-06-20
+
+### Scope
+
+迭代家庭中心体验的默认入口行为与鲁棒性，满足“默认进入自己的数字分身”与“稳定沟通”。
+
+### Changed
+
+- 在家庭能力首次启动时强制选中“自己”账号为默认联系人（`FamilyHub` 首屏始终进入自身数字分身），并持久记录该初始化标记，避免影响用户后续手动选中记忆。
+- 加强空数据兜底：`selectedFamilyMember` 在异常情况下返回一个可用的自身成员模型，避免列表被损坏时产生崩溃。
+
+### Verification
+
+- `./scripts/build_ios.sh` 成功。
+- `./scripts/run_ios_sim.sh` 成功，并能在可用模拟器中安装启动。
+- 最新联系人默认行为可通过 FamilyHub 打开截图验证。
