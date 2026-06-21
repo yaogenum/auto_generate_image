@@ -7,6 +7,7 @@ BUNDLE_ID="com.codex.CartoonWorld"
 DEVICE_TYPE="${DEVICE_TYPE:-com.apple.CoreSimulator.SimDeviceType.iPhone-16e}"
 SIM_NAME="${SIM_NAME:-CartoonWorld-iPhone}"
 SIMCTL_TIMEOUT="${SIMCTL_TIMEOUT:-25}"
+AUTO_DEMO="${CARTOON_AUTO_DEMO:-0}"
 
 run_simctl() {
   local label="$1"
@@ -75,4 +76,12 @@ open -a Simulator
 run_simctl "terminating existing app" xcrun simctl terminate "$SIM_ID" "$BUNDLE_ID" >/dev/null 2>&1 || true
 run_simctl "uninstalling existing app" xcrun simctl uninstall "$SIM_ID" "$BUNDLE_ID" >/dev/null 2>&1 || true
 run_simctl "installing app" xcrun simctl install "$SIM_ID" "$APP_PATH"
-run_simctl "launching app" xcrun simctl launch --terminate-running-process "$SIM_ID" "$BUNDLE_ID"
+
+AUTO_DEMO_NORMALIZED="$(printf '%s' "$AUTO_DEMO" | tr '[:upper:]' '[:lower:]')"
+if [[ "$AUTO_DEMO_NORMALIZED" == "1" || "$AUTO_DEMO_NORMALIZED" == "true" || "$AUTO_DEMO_NORMALIZED" == "yes" || "$AUTO_DEMO_NORMALIZED" == "enabled" ]]; then
+  run_simctl "launching app with auto demo" \
+    env SIMCTL_CHILD_CARTOON_AUTO_DEMO=1 \
+    xcrun simctl launch --terminate-running-process "$SIM_ID" "$BUNDLE_ID"
+else
+  run_simctl "launching app" xcrun simctl launch --terminate-running-process "$SIM_ID" "$BUNDLE_ID"
+fi

@@ -54,6 +54,8 @@ struct ProfileView: View {
                 .padding(14)
                 .background(Color(uiColor: .secondarySystemGroupedBackground), in: RoundedRectangle(cornerRadius: 8))
 
+                proxyControlPanel
+
                 worldStats
             }
             .padding()
@@ -105,12 +107,124 @@ struct ProfileView: View {
 
             Grid(alignment: .leading, horizontalSpacing: 16, verticalSpacing: 12) {
                 GridRow {
-                    StatCell(title: "三城地点", value: "\(world.places.count)")
+                    StatCell(title: "五城地点", value: "\(world.places.count)")
                     StatCell(title: "素材资产", value: "\(world.contributions.count)")
                 }
                 GridRow {
                     StatCell(title: "已融入", value: "\(world.contributions.filter { $0.status == .integrated }.count)")
                     StatCell(title: "能量", value: "\(Int(world.avatarEnergy * 100))%")
+                }
+            }
+        }
+        .padding(14)
+        .background(Color(uiColor: .secondarySystemGroupedBackground), in: RoundedRectangle(cornerRadius: 8))
+    }
+
+    private var proxyControlPanel: some View {
+        VStack(alignment: .leading, spacing: 12) {
+            Text("我与数字分身")
+                .font(.headline)
+
+            Text("默认由你的数字分身先与其他家人的数字分身进行 social；只有遇到问题时，才把 issue 提给本人确认。")
+                .font(.caption)
+                .foregroundStyle(.secondary)
+
+            VStack(alignment: .leading, spacing: 8) {
+                ForEach(SelfProxyMode.allCases, id: \.self) { mode in
+                    Button {
+                        world.setSelfProxyMode(mode)
+                    } label: {
+                        HStack(alignment: .top, spacing: 10) {
+                            Image(systemName: world.selfProxyMode == mode ? "largecircle.fill.circle" : "circle")
+                                .foregroundStyle(world.selfProxyMode == mode ? .mint : .secondary)
+                            VStack(alignment: .leading, spacing: 2) {
+                                Text(mode.rawValue)
+                                    .font(.subheadline.weight(.semibold))
+                                Text(mode.detail)
+                                    .font(.caption)
+                                    .foregroundStyle(.secondary)
+                            }
+                            Spacer()
+                        }
+                        .padding(10)
+                        .background(Color(uiColor: .tertiarySystemGroupedBackground), in: RoundedRectangle(cornerRadius: 10))
+                    }
+                    .buttonStyle(.plain)
+                    .foregroundStyle(.primary)
+                }
+            }
+
+            HStack(spacing: 10) {
+                Button("切回本人在线") {
+                    world.touchHumanPresence()
+                    world.setSelfProxyMode(.human)
+                }
+                .buttonStyle(.borderedProminent)
+                .tint(.mint)
+
+                Button("模拟长时间未登录") {
+                    world.simulateLongAbsenceForDemo()
+                }
+                .buttonStyle(.bordered)
+            }
+
+            VStack(alignment: .leading, spacing: 6) {
+                Text("当前托管状态")
+                    .font(.caption.weight(.semibold))
+                    .foregroundStyle(.secondary)
+                Text(world.isSelfProxyFullyDelegated
+                     ? "你已超过 72 小时未接管，数字分身已进入全托管模式。"
+                     : "本人最近在线，当前策略为：\(world.effectiveSelfProxyMode.rawValue)。")
+                    .font(.caption)
+                    .foregroundStyle(.secondary)
+                Text("最近本人接管：\(world.lastHumanTakeoverAt.formatted(date: .abbreviated, time: .shortened))")
+                    .font(.caption2)
+                    .foregroundStyle(.secondary)
+            }
+
+            VStack(alignment: .leading, spacing: 8) {
+                HStack {
+                    Text("待确认 issue")
+                        .font(.subheadline.weight(.semibold))
+                    Spacer()
+                    Text("\(world.openAgentIssueCount)")
+                        .font(.caption2.weight(.bold))
+                        .foregroundStyle(.orange)
+                }
+
+                if world.openAgentIssues.isEmpty {
+                    Text("当前没有需要你确认的问题，数字分身可以继续保持对外社交。")
+                        .font(.caption)
+                        .foregroundStyle(.secondary)
+                } else {
+                    ForEach(world.openAgentIssues.prefix(3)) { issue in
+                        VStack(alignment: .leading, spacing: 6) {
+                            Text(world.familyMemberName(for: issue.memberID))
+                                .font(.caption2.weight(.bold))
+                                .foregroundStyle(.mint)
+                            Text(issue.prompt)
+                                .font(.caption)
+                            Text("建议回复：\(issue.suggestedReply)")
+                                .font(.caption2)
+                                .foregroundStyle(.secondary)
+                            HStack(spacing: 6) {
+                                Button("确认发送") {
+                                    world.approveIssue(issue.id)
+                                }
+                                .buttonStyle(.borderedProminent)
+                                .tint(.mint)
+                                .controlSize(.mini)
+
+                                Button("本人接管") {
+                                    world.deferIssueToHuman(issue.id)
+                                }
+                                .buttonStyle(.bordered)
+                                .controlSize(.mini)
+                            }
+                        }
+                        .padding(10)
+                        .background(Color.orange.opacity(0.08), in: RoundedRectangle(cornerRadius: 10))
+                    }
                 }
             }
         }

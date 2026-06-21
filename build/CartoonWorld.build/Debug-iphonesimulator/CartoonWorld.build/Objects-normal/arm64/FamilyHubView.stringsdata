@@ -1,0 +1,536 @@
+{
+  "source": "/Users/jiubao/Desktop/codex_workplace/auto_generate_image/CartoonWorld/FamilyHubView.swift",
+  "tables": {
+    "Localizable": [
+      {
+        "comment": "",
+        "key": "家人管理",
+        "location": {
+          "startingColumn": 27,
+          "startingLine": 47
+        }
+      },
+      {
+        "comment": "",
+        "key": "联系人",
+        "location": {
+          "startingColumn": 22,
+          "startingLine": 72
+        }
+      },
+      {
+        "comment": "",
+        "key": "联系人结构",
+        "location": {
+          "startingColumn": 24,
+          "startingLine": 77
+        }
+      },
+      {
+        "comment": "",
+        "key": "已选中",
+        "location": {
+          "startingColumn": 38,
+          "startingLine": 123
+        }
+      },
+      {
+        "comment": "",
+        "key": "新增家人",
+        "location": {
+          "startingColumn": 27,
+          "startingLine": 148
+        }
+      },
+      {
+        "comment": "",
+        "key": "先新增家人，显示关系拓扑",
+        "location": {
+          "startingColumn": 26,
+          "startingLine": 169
+        }
+      },
+      {
+        "comment": "",
+        "key": "新增家人",
+        "location": {
+          "startingColumn": 19,
+          "startingLine": 336
+        }
+      },
+      {
+        "comment": "",
+        "key": "新增\n家人",
+        "location": {
+          "startingColumn": 22,
+          "startingLine": 354
+        }
+      },
+      {
+        "comment": "",
+        "key": "我",
+        "location": {
+          "startingColumn": 30,
+          "startingLine": 385
+        }
+      },
+      {
+        "comment": "",
+        "key": "%lld",
+        "location": {
+          "startingColumn": 30,
+          "startingLine": 389
+        }
+      },
+      {
+        "comment": "",
+        "key": "当前：%@",
+        "location": {
+          "startingColumn": 26,
+          "startingLine": 498
+        }
+      },
+      {
+        "comment": "",
+        "key": "生日：%@",
+        "location": {
+          "startingColumn": 30,
+          "startingLine": 505
+        }
+      },
+      {
+        "comment": "",
+        "key": "固定聊天：%@",
+        "location": {
+          "startingColumn": 26,
+          "startingLine": 510
+        }
+      },
+      {
+        "comment": "",
+        "key": "我",
+        "location": {
+          "startingColumn": 30,
+          "startingLine": 471
+        }
+      },
+      {
+        "comment": "",
+        "key": "今天是生日",
+        "location": {
+          "startingColumn": 34,
+          "startingLine": 480
+        }
+      },
+      {
+        "comment": "",
+        "key": "固定沟通日",
+        "location": {
+          "startingColumn": 34,
+          "startingLine": 484
+        }
+      },
+      {
+        "comment": "",
+        "key": "对方状态",
+        "location": {
+          "startingColumn": 41,
+          "startingLine": 553
+        }
+      },
+      {
+        "comment": "",
+        "key": "沟通",
+        "location": {
+          "startingColumn": 41,
+          "startingLine": 560
+        }
+      },
+      {
+        "comment": "",
+        "key": "模拟来信",
+        "location": {
+          "startingColumn": 44,
+          "startingLine": 561
+        }
+      },
+      {
+        "comment": "",
+        "key": "语音",
+        "location": {
+          "startingColumn": 44,
+          "startingLine": 564
+        }
+      },
+      {
+        "comment": "",
+        "key": "视频",
+        "location": {
+          "startingColumn": 44,
+          "startingLine": 567
+        }
+      },
+      {
+        "comment": "",
+        "key": "模拟来信",
+        "location": {
+          "startingColumn": 40,
+          "startingLine": 611
+        }
+      },
+      {
+        "comment": "",
+        "key": "语音",
+        "location": {
+          "startingColumn": 40,
+          "startingLine": 614
+        }
+      },
+      {
+        "comment": "",
+        "key": "视频",
+        "location": {
+          "startingColumn": 40,
+          "startingLine": 617
+        }
+      },
+      {
+        "comment": "",
+        "key": "本人接管",
+        "location": {
+          "startingColumn": 28,
+          "startingLine": 678
+        }
+      },
+      {
+        "comment": "",
+        "key": "模拟来信",
+        "location": {
+          "startingColumn": 28,
+          "startingLine": 684
+        }
+      },
+      {
+        "comment": "",
+        "key": "你的数字分身在前台社交",
+        "location": {
+          "startingColumn": 26,
+          "startingLine": 652
+        }
+      },
+      {
+        "comment": "",
+        "key": "分身社交链路",
+        "location": {
+          "startingColumn": 26,
+          "startingLine": 660
+        }
+      },
+      {
+        "comment": "",
+        "key": "对方当前为 %@；你的一侧当前是 %@。",
+        "location": {
+          "startingColumn": 26,
+          "startingLine": 662
+        }
+      },
+      {
+        "comment": "",
+        "key": "待确认 issue：%lld",
+        "location": {
+          "startingColumn": 26,
+          "startingLine": 668
+        }
+      },
+      {
+        "comment": "",
+        "key": "待本人确认",
+        "location": {
+          "startingColumn": 26,
+          "startingLine": 705
+        }
+      },
+      {
+        "comment": "",
+        "key": "%lld",
+        "location": {
+          "startingColumn": 26,
+          "startingLine": 709
+        }
+      },
+      {
+        "comment": "",
+        "key": "建议回复：%@",
+        "location": {
+          "startingColumn": 30,
+          "startingLine": 719
+        }
+      },
+      {
+        "comment": "",
+        "key": "确认发送",
+        "location": {
+          "startingColumn": 40,
+          "startingLine": 726
+        }
+      },
+      {
+        "comment": "",
+        "key": "本人接管",
+        "location": {
+          "startingColumn": 40,
+          "startingLine": 733
+        }
+      },
+      {
+        "comment": "",
+        "key": "忽略",
+        "location": {
+          "startingColumn": 40,
+          "startingLine": 739
+        }
+      },
+      {
+        "comment": "",
+        "key": "最近对话",
+        "location": {
+          "startingColumn": 22,
+          "startingLine": 774
+        }
+      },
+      {
+        "comment": "",
+        "key": "聊天记录（%lld）",
+        "location": {
+          "startingColumn": 26,
+          "startingLine": 764
+        }
+      },
+      {
+        "comment": "",
+        "key": "先发消息创建对话",
+        "location": {
+          "startingColumn": 30,
+          "startingLine": 768
+        }
+      },
+      {
+        "comment": "",
+        "key": "还没有聊天记录，先发条消息打个招呼吧",
+        "location": {
+          "startingColumn": 26,
+          "startingLine": 781
+        }
+      },
+      {
+        "comment": "",
+        "key": "语音",
+        "location": {
+          "startingColumn": 31,
+          "startingLine": 808
+        }
+      },
+      {
+        "comment": "",
+        "key": "视频",
+        "location": {
+          "startingColumn": 31,
+          "startingLine": 818
+        }
+      },
+      {
+        "comment": "",
+        "key": "给数字分身下达指令",
+        "location": {
+          "startingColumn": 63,
+          "startingLine": 829
+        }
+      },
+      {
+        "comment": "",
+        "key": "给 %@ 发送消息",
+        "location": {
+          "startingColumn": 95,
+          "startingLine": 829
+        }
+      },
+      {
+        "comment": "",
+        "key": "下发",
+        "location": {
+          "startingColumn": 62,
+          "startingLine": 851
+        }
+      },
+      {
+        "comment": "",
+        "key": "发送",
+        "location": {
+          "startingColumn": 73,
+          "startingLine": 851
+        }
+      },
+      {
+        "comment": "",
+        "key": "对方状态：%@",
+        "location": {
+          "startingColumn": 29,
+          "startingLine": 910
+        }
+      },
+      {
+        "comment": "",
+        "key": "家人关系维护",
+        "location": {
+          "startingColumn": 30,
+          "startingLine": 1106
+        }
+      },
+      {
+        "comment": "",
+        "key": "家庭成员",
+        "location": {
+          "startingColumn": 25,
+          "startingLine": 999
+        }
+      },
+      {
+        "comment": "",
+        "key": "成员信息",
+        "location": {
+          "startingColumn": 29,
+          "startingLine": 1036
+        }
+      },
+      {
+        "comment": "",
+        "key": "新增家人",
+        "location": {
+          "startingColumn": 28,
+          "startingLine": 1028
+        }
+      },
+      {
+        "comment": "",
+        "key": "固定聊天：%@",
+        "location": {
+          "startingColumn": 38,
+          "startingLine": 1008
+        }
+      },
+      {
+        "comment": "",
+        "key": "编辑",
+        "location": {
+          "startingColumn": 40,
+          "startingLine": 1012
+        }
+      },
+      {
+        "comment": "",
+        "key": "移除",
+        "location": {
+          "startingColumn": 44,
+          "startingLine": 1019
+        }
+      },
+      {
+        "comment": "",
+        "key": "姓名",
+        "location": {
+          "startingColumn": 35,
+          "startingLine": 1037
+        }
+      },
+      {
+        "comment": "",
+        "key": "联系方式",
+        "location": {
+          "startingColumn": 35,
+          "startingLine": 1064
+        }
+      },
+      {
+        "comment": "",
+        "key": "对方状态",
+        "location": {
+          "startingColumn": 36,
+          "startingLine": 1068
+        }
+      },
+      {
+        "comment": "",
+        "key": "设置生日",
+        "location": {
+          "startingColumn": 32,
+          "startingLine": 1079
+        }
+      },
+      {
+        "comment": "",
+        "key": "生日",
+        "location": {
+          "startingColumn": 40,
+          "startingLine": 1081
+        }
+      },
+      {
+        "comment": "",
+        "key": "每周固定在第 %lld 天",
+        "location": {
+          "startingColumn": 33,
+          "startingLine": 1084
+        }
+      },
+      {
+        "comment": "",
+        "key": "时间",
+        "location": {
+          "startingColumn": 35,
+          "startingLine": 1085
+        }
+      },
+      {
+        "comment": "",
+        "key": "保存(自己)",
+        "location": {
+          "startingColumn": 49,
+          "startingLine": 1088
+        }
+      },
+      {
+        "comment": "",
+        "key": "保存成员",
+        "location": {
+          "startingColumn": 68,
+          "startingLine": 1088
+        }
+      },
+      {
+        "comment": "",
+        "key": "关系快捷标签（第一人称）",
+        "location": {
+          "startingColumn": 34,
+          "startingLine": 1039
+        }
+      },
+      {
+        "comment": "",
+        "key": "关系",
+        "location": {
+          "startingColumn": 39,
+          "startingLine": 1061
+        }
+      },
+      {
+        "comment": "",
+        "key": "关闭",
+        "location": {
+          "startingColumn": 28,
+          "startingLine": 1109
+        }
+      }
+    ]
+  },
+  "version": 1
+}

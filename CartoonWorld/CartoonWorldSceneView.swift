@@ -4,6 +4,7 @@ import SwiftUI
 struct CartoonWorldSceneView: UIViewRepresentable {
     let places: [WorldPlace]
     let contributions: [MediaContribution]
+    let momentCountByPlace: [String: Int]
     @Binding var selectedPlaceID: String
 
     func makeCoordinator() -> Coordinator {
@@ -20,7 +21,11 @@ struct CartoonWorldSceneView: UIViewRepresentable {
         view.antialiasingMode = .multisampling4X
         view.preferredFramesPerSecond = 60
 
-        let scene = context.coordinator.makeScene(places: places, contributions: contributions)
+        let scene = context.coordinator.makeScene(
+            places: places,
+            contributions: contributions,
+            momentCountByPlace: momentCountByPlace
+        )
         view.scene = scene
         let tap = UITapGestureRecognizer(target: context.coordinator, action: #selector(Coordinator.handleTap(_:)))
         view.addGestureRecognizer(tap)
@@ -31,12 +36,14 @@ struct CartoonWorldSceneView: UIViewRepresentable {
     func updateUIView(_ view: SCNView, context: Context) {
         context.coordinator.updateSelection(selectedPlaceID)
         context.coordinator.updateContributions(contributions)
+        context.coordinator.updateMoments(momentCountByPlace)
     }
 
     final class Coordinator: NSObject {
         private var selectedPlaceID: Binding<String>
         private var placeNodes: [String: SCNNode] = [:]
         private var beaconNodes: [String: SCNNode] = [:]
+        private var momentBeaconNodes: [String: SCNNode] = [:]
         private var avatarNode = SCNNode()
         private var cameraNode = SCNNode()
         weak var sceneView: SCNView?
@@ -45,7 +52,7 @@ struct CartoonWorldSceneView: UIViewRepresentable {
             self.selectedPlaceID = selectedPlaceID
         }
 
-        func makeScene(places: [WorldPlace], contributions: [MediaContribution]) -> SCNScene {
+        func makeScene(places: [WorldPlace], contributions: [MediaContribution], momentCountByPlace: [String: Int]) -> SCNScene {
             let scene = SCNScene()
             scene.rootNode.addChildNode(makeCamera())
             scene.rootNode.addChildNode(makeSun())
@@ -68,6 +75,11 @@ struct CartoonWorldSceneView: UIViewRepresentable {
                 beacon.position = SCNVector3(position.x + 1.0, 0.1, position.z - 1.0)
                 scene.rootNode.addChildNode(beacon)
                 beaconNodes[place.id] = beacon
+
+                let momentBeacon = makeMomentBeacon(count: momentCountByPlace[place.id, default: 0])
+                momentBeacon.position = SCNVector3(position.x - 1.12, 0.1, position.z + 1.02)
+                scene.rootNode.addChildNode(momentBeacon)
+                momentBeaconNodes[place.id] = momentBeacon
             }
 
             avatarNode = makeAvatar()
@@ -117,6 +129,25 @@ struct CartoonWorldSceneView: UIViewRepresentable {
                 if count > 0 && node.action(forKey: "spin") == nil {
                     let spin = SCNAction.repeatForever(.rotateBy(x: 0, y: .pi * 2, z: 0, duration: 5.5))
                     node.runAction(spin, forKey: "spin")
+                }
+            }
+        }
+
+        func updateMoments(_ momentCountByPlace: [String: Int]) {
+            for (placeID, node) in momentBeaconNodes {
+                let count = momentCountByPlace[placeID, default: 0]
+                node.isHidden = count == 0
+                node.scale = SCNVector3(1, CGFloat(max(1, count)), 1)
+                if count > 0 {
+                    if node.action(forKey: "float") == nil {
+                        let up = SCNAction.moveBy(x: 0, y: 0.06, z: 0, duration: 1.2)
+                        up.timingMode = .easeInEaseOut
+                        let down = SCNAction.moveBy(x: 0, y: -0.06, z: 0, duration: 1.2)
+                        down.timingMode = .easeInEaseOut
+                        node.runAction(.repeatForever(.sequence([up, down])), forKey: "float")
+                    }
+                } else {
+                    node.removeAction(forKey: "float")
                 }
             }
         }
@@ -587,6 +618,30 @@ struct CartoonWorldSceneView: UIViewRepresentable {
             let crystalNode = SCNNode(geometry: crystal)
             crystalNode.position.y = 1.17
             root.addChildNode(crystalNode)
+            return root
+        }
+
+        private func makeMomentBeacon(count: Int) -> SCNNode {
+            let root = SCNNode()
+            root.isHidden = count == 0
+
+            let shell = SCNTorus(ringRadius: 0.34, pipeRadius: 0.028)
+            let shellMaterial = material(UIColor(red: 0.88, green: 0.25, blue: 0.98, alpha: 0.75), roughness: 0.14)
+            shellMaterial.emission.contents = UIColor(red: 0.67, green: 0.2, blue: 0.95, alpha: 0.2)
+            shell.firstMaterial = shellMaterial
+            let shellNode = SCNNode(geometry: shell)
+            shellNode.position = SCNVector3(0, 1.0, 0)
+            shellNode.runAction(.repeatForever(.rotateBy(x: 0, y: .pi * 2, z: .pi / 10, duration: 4.5)), forKey: "momentSpin")
+            root.addChildNode(shellNode)
+
+            let core = SCNCapsule(capRadius: 0.03, height: 0.12)
+            let coreMaterial = material(UIColor(red: 1, green: 0.85, blue: 1, alpha: 0.9), roughness: 0.08)
+            coreMaterial.emission.contents = UIColor(red: 0.85, green: 0.52, blue: 1, alpha: 0.28)
+            core.firstMaterial = coreMaterial
+            let coreNode = SCNNode(geometry: core)
+            coreNode.position = SCNVector3(0, 1.22, 0)
+            root.addChildNode(coreNode)
+
             return root
         }
 

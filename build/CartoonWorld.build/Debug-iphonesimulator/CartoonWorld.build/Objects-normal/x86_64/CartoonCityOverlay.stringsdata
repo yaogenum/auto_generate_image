@@ -1,5 +1,16 @@
 {
   "source": "/Users/jiubao/Desktop/codex_workplace/auto_generate_image/CartoonWorld/CartoonCityOverlay.swift",
-  "tables": {},
+  "tables": {
+    "Localizable": [
+      {
+        "comment": "",
+        "key": "%lld",
+        "location": {
+          "startingColumn": 34,
+          "startingLine": 90
+        }
+      }
+    ]
+  },
   "version": 1
 }

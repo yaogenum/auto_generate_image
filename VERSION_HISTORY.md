@@ -2,6 +2,35 @@
 
 This file records product and implementation iterations for the Cartoon World iOS app.
 
+## 0.3.11 - 2026-06-21
+
+### Scope
+
+优化家人会话页红框区域：把对方路由文案改成可理解的在线状态，并把底部通话控制默认收起，减少聊天区遮挡和按钮噪音。
+
+### Changed
+
+- 家人状态展示：
+  - 新增 `真人未登录` 状态，UI 显示为红色 `真人离线`。
+  - `线上Agent` / `真人用户` 不再直接暴露为刻意标签，改为绿色 `对方在线` / `真人在线`。
+  - `本机Agent` 改为 `本机模拟`，明确这是当前本机 Demo 能力。
+- 家人页头部操作：
+  - 原来的“路由/语音/视频/展开”一排按钮收敛为“展开/收起 + 更多”。
+  - 更多菜单内承载状态切换、模拟来信、语音、视频。
+- 聊天输入区：
+  - 默认只展示输入框、通话入口、发送按钮。
+  - 点击通话入口后再展开语音/视频，执行后自动收起。
+- QA 支撑：
+  - 新增 `CARTOON_INITIAL_FAMILY_CALL_TRAY_EXPANDED` 与 `CARTOON_INITIAL_FAMILY_CONTACT_ENDPOINT` 启动参数，便于固定复现状态和截图。
+  - `scripts/capture_screenshots.sh` 增加 `family_human_offline_status` 与 `family_call_tray_expanded`。
+  - 名古屋截图增加额外等待，避免 MapKit/素材加载慢导致白屏快照。
+
+### Verification
+
+- `./scripts/build_ios.sh` 成功。
+- `./scripts/capture_screenshots.sh` 成功，生成 17 张关键截图。
+- 自动截图质检发现并修复 `world_nagoya_explore.png` 白屏问题，复抓后恢复正常。
+
 ## 0.1.0 - 2026-06-13
 
 ### Scope
@@ -372,3 +401,300 @@ Implemented family communication and social lifecycle features in the core iOS a
 - `./scripts/build_ios.sh` 成功。
 - `./scripts/run_ios_sim.sh` 成功，并能在可用模拟器中安装启动。
 - 最新联系人默认行为可通过 FamilyHub 打开截图验证。
+
+## 0.3.2 - 2026-06-20
+
+### Scope
+
+家庭页优化（你当前反馈）：
+
+- 联系人区域从单行布局改为两种结构视图：拓扑图与横向列表切换。
+- 家人关系拓扑增加“新增家人”入口，并展示关系标签。
+- 中间对话框加入简略/展开态：
+  - 简略态只展示核心信息与最近消息，界面更紧凑。
+  - 点击“展开”后，对话面板进入放大态，占满家人页面主体。
+  - 仍保留语音/视频发起入口，并在展开态补充身份关系与沟通提醒信息。
+
+### Changed
+
+- 更新 `CartoonWorld/FamilyHubView.swift`：
+  - 新增 `contactLayout` 状态与 `FamilyContactLayout` 枚举，驱动 `Picker` 切换。
+  - 重构 `body`：`isChatExpanded` 为 true 时隐藏联系人区块，专注渲染全屏聊天面板。
+  - 新增 `compactChatPanel` 与 `expandedChatPanel`，并统一消息显示策略（简略显示最近 4 条，展开显示全部）。
+  - 修复 `topologyLayout` 的编译稳定性问题，改为显式构建布局字典，避免类型推断超时。
+- 切换联系人时自动重置展开态，保证行为一致。
+
+### Verification
+
+- `./scripts/build_ios.sh` 成功。
+- 在 Booted 模拟器（`EFCBDF14-657B-4C89-BF09-9E896E0C27AB`）上安装并启动：
+  - `xcrun simctl install ... build/Debug-iphonesimulator/CartoonWorld.app`
+  - `xcrun simctl launch ... com.codex.CartoonWorld`
+- 已抓图：`/tmp/cartoonworld-family.png`。
+
+## 0.3.3 - 2026-06-21
+
+### Scope
+
+扩充世界多城市地标内容，并把本地东京、大阪、名古屋、香港素材真正融合到地图详情与 Moments / 家人互动链路中。
+
+### Changed
+
+- 世界种子扩展：
+  - `WorldSeed` 新增 `大阪` 与 `名古屋` 两座城市。
+  - 现已覆盖 `上海 / 东京 / 大阪 / 名古屋 / 香港` 五城。
+  - 为大阪补充 10 个地标与生活节点，包括大阪城、梅田空中庭园、道顿堀、大阪站城等。
+  - 为名古屋补充 10 个地标与生活节点，包括名古屋城、名古屋站、荣商圈、大须、热田神宫等。
+- 资源接入改造：
+  - 将整个 `images` 目录加入 iOS app bundle。
+  - 新增 `素材元数据.json` 解析与城市 / 地标关键字映射。
+  - 启动时自动把本地素材清单导入为地图贡献素材，并按 POI 归位。
+- 地图详情增强：
+  - 世界页点击地标后会自动展开探索面板。
+  - 新增“当前地标详情”区块，按顺序展示：
+    - 图片合集（左图右文列表）
+    - 该地标关联 Moments
+    - 与家人的互动 / 聊天 demo
+  - 城市切换控件改为横向滚动胶囊条，避免五城后分段控件过挤。
+- 叙事 demo：
+  - 若本地没有家人样本，会自动注入 `妈妈 / 姐姐` demo 角色。
+  - 为上海、东京、大阪、名古屋、香港各补一组地标 Moments 与聊天映射示例。
+- 其他修正：
+  - 为大阪 / 名古屋补充真实 3D 地图相机参数。
+  - 更新上传页文案，覆盖五城。
+  - 清理 `FamilyHubView` 中一条未使用变量 warning。
+
+### Verification
+
+- `./scripts/build_ios.sh` 成功。
+- `SIMCTL_TIMEOUT=30 ./scripts/run_ios_sim.sh` 成功，并在当前 booted simulator 启动 app。
+- 启动后首屏截图有效：`artifacts/cartoonworld-multicity-current-v2.png`。
+- 尝试自动切换到世界 Tab 做补充截图，但当前本机模拟器点击自动化未稳定切换 Tab，因此未将世界页截图记为本轮验收证据。
+
+## 0.3.4 - 2026-06-21
+
+### Scope
+
+围绕“真人控制自己的数字分身，分身之间先社交，遇到问题再回流给本人确认”的主链路，完成家人页与身份页的一轮体验和性能优化。
+
+### Changed
+
+- 数字分身社交链路落地：
+  - 新增 `ContactConversationEndpoint`，支持 `本机Agent / 线上Agent / 真人用户` 三种联系人接入方式。
+  - 新增 `SelfProxyMode`，支持 `分身代答 / 本人处理 / 待本人确认` 三种本人分身策略。
+  - 新增 `AgentIssue` 与状态流转，支持分身把待确认问题记录下来，再由本人确认发送或接管。
+- `WorldModel` 代理逻辑增强：
+  - 持久化保存分身模式、联系人路由、待确认 issue、最近本人接管时间。
+  - 新增“长时间未登录后进入全托管”的判断逻辑。
+  - 新增模拟来信、批准 issue、本人接管、忽略 issue 等行为。
+- 家人页重构：
+  - 聊天头部显示当前分身模式或对方接入方式。
+  - 紧凑态与展开态都支持 issue 队列展示。
+  - 展开态将“模拟来信”下沉到策略横幅，顶部按钮收缩为更稳定的控制组。
+  - 底部聊天输入区的语音/视频按钮压缩为与输入框同高的方形操作位。
+  - 家人管理页新增联系人接入方式配置。
+- 拓扑图视觉优化：
+  - 将“新增家人”节点移出中心区，避免压住自己节点。
+  - 关系线改为更稳定的折线锚点，避免直接穿过中心节点。
+  - 自己节点的名称增加白底标签，降低连线与文字重叠带来的脏乱感。
+- 首屏渲染性能优化：
+- 启动时导入种子素材不再同步解码原图数据，避免家人页启动阶段出现长时间白屏。
+- 素材仍保留 `mediaURL`，需要展示时再走按需读取。
+
+### Verification
+
+- `./scripts/build_ios.sh` 成功。
+- `./scripts/run_ios_sim.sh` 成功，并在当前 booted simulator 启动 app。
+- 启动后 `3s` 即可抓到有效家人页首屏，不再需要等待十几秒：
+  - `artifacts/startup-3s.png`
+  - `artifacts/final-family-pass.png`
+
+## 0.3.6 - 2026-06-21
+
+### Scope
+
+补齐“每个界面与关键操作”截图质检链路，并形成可追踪的操作动线文档（含世界节点联动）。
+
+### Changed
+
+- 截图流水线增强：
+  - `scripts/capture_screenshots.sh` 改为参数化场景脚本，支持同一 App 实例自动生成家人/世界/上传/身份截图。
+  - 对世界场景补充卡通/真实 3D、城市切换、地标聚焦、Panel 展开态等参数组合。
+  - 统一采用 `SIMCTL_CHILD_` + `--KEY=value` 双路径注入，降低参数不入参导致脚本漂移风险。
+- 调试参数读取增强：
+  - `ContentView` 的 `debugValue` 在环境变量基础上增加 `--KEY=value` 启动参数解析。
+  - 保持现网启动逻辑不变，仅在调试流程注入初始化态。
+- 质检闭环：
+  - 新增一轮截图覆盖并落库至 `artifacts/screenshots/`，形成“家人（紧凑、展开、列表） / 世界（多城） / 上传 / 身份”链路。
+
+### Verification
+
+- `./scripts/build_ios.sh` 成功。
+- 截图脚本成功执行：`./scripts/capture_screenshots.sh`
+- 截图产物覆盖：
+  - `artifacts/screenshots/family_topology_compact.png`
+  - `artifacts/screenshots/family_topology_expanded.png`
+  - `artifacts/screenshots/family_list.png`
+  - `artifacts/screenshots/world_shanghai_cartoon_compact.png`
+  - `artifacts/screenshots/world_tokyo_real_explore.png`
+  - `artifacts/screenshots/world_nagoya_explore.png`
+  - `artifacts/screenshots/world_osaka_moments.png`
+  - `artifacts/screenshots/world_hk_relations.png`
+  - `artifacts/screenshots/upload.png`
+  - `artifacts/screenshots/profile.png`
+- `world_tokyo_real_explore.png`、`world_osaka_moments.png` 目前与基础帧重复，列为后续优化点（优先排查参数注入与目标地标渲染入口）。
+
+### Next
+
+- 下一步继续补齐东京/大阪世界态差异化截图（包括按钮动作后的下一跳状态），并在质检中闭环“点击地图 -> 进详情 -> 打开 Moments -> 发起聊天”动作链。
+
+## 0.3.7 - 2026-06-21
+
+### Scope
+
+继续按“无法再发现可优化点”原则执行可视化收口：修复截图质检脚本并完成一轮家庭页细节优化验证。
+
+### Changed
+
+- 家人页交互收口优化：
+  - 顶部展开/收起与语音视频按钮在紧凑态与展开态统一压缩为更小尺寸，避免遮挡。
+  - 关系拓扑连接线采用稳定折线路径，减少线性排列下节点堆叠和重叠感。
+  - 联系人节点标签与自己节点视觉层级保持不变，但更强调“关系文本/身份标签”读取。
+- 质检脚本完善：
+  - 修复 `scripts/qa_verify_screenshots.sh` 在不同 shell 下兼容性问题（去除 `declare -A`、修复尺寸解析、清理临时文件）。
+  - 确保同一张截图重复检测和 PASS/FAIL 统计稳定输出。
+- 截图闭环推进：
+  - 增补并锁定世界与家人链路全量 15 张关键截图输出（新增 `world_ui_restored`）。
+  - `artifacts/screenshots/screenshot-qa-assertion.txt` 记录本轮 PASS 结果，覆盖所有关键状态。
+
+### Verification
+
+- `./scripts/build_ios.sh` 成功。
+- `./scripts/run_ios_sim.sh` 成功，并在当前 booted simulator 安装/启动 app。
+- `./scripts/capture_screenshots.sh` 成功，产出：
+  - `artifacts/screenshots/family_topology_compact.png`
+  - `artifacts/screenshots/family_topology_expanded.png`
+  - `artifacts/screenshots/family_list.png`
+  - `artifacts/screenshots/world_shanghai_real_compact.png`
+  - `artifacts/screenshots/world_shanghai_cartoon_compact.png`
+  - `artifacts/screenshots/world_tokyo_real_explore.png`
+  - `artifacts/screenshots/world_tokyo_moments.png`
+  - `artifacts/screenshots/world_nagoya_explore.png`
+  - `artifacts/screenshots/world_osaka_moments.png`
+  - `artifacts/screenshots/world_hk_relations.png`
+  - `artifacts/screenshots/world_hk_moments_focus.png`
+  - `artifacts/screenshots/world_ui_hidden.png`
+  - `artifacts/screenshots/world_ui_restored.png`
+  - `artifacts/screenshots/upload.png`
+  - `artifacts/screenshots/profile.png`
+- `./scripts/qa_verify_screenshots.sh` 成功：
+  - `PASS_COUNT=15`
+  - `FAIL_COUNT=0`
+  - `RESULT=OK`
+
+### 结论
+
+- 本轮关键链路已闭环；当前脚本和截图结果可作为下一轮“无可优化”判断输入。
+
+## 0.3.7 - 2026-06-21
+
+### Scope
+
+完成“每个界面/操作的截图复核闭环”，修复截图重复问题并持续输出操作动线。
+
+### Changed
+
+- 截图脚本与启动参数能力收敛：
+  - `scripts/capture_screenshots.sh` 增加统一等待时长 3.8 秒，避免首屏时序抖动。
+  - 世界页、家人页、上传页、身份页全部基于脚本注入参数重拍。
+- Debug 参数解析鲁棒性增强（`ContentView.swift`）：
+  - `CARTOON_INITIAL_WORLD_MODE` 支持 `real3D/real3d/real/3d` 等同义。
+  - `CARTOON_INITIAL_WORLD_PANEL_SECTION` 支持大小写/同义词匹配，`Moments` 可稳定落图。
+  - `AppTab` 改为 `CaseIterable`，支持 tab 的宽松匹配。
+- 世界页注入时序优化（`WorldMapView.swift`）：
+  - 将参数注入后再做 `ensureSelection`，降低“启动参数未注入但先选中旧城市”的概率。
+- 质检文档升级：
+  - 重新生成并更新 `artifacts/screenshot-qa-pass.md`，加入 W1-W5/F1-F3/U1/P1 全量状态表。
+  - 附带操作动线 `mermaid flowchart`，用于每次迭代前后的闭环追踪。
+
+### Verification
+
+- `./scripts/build_ios.sh` 成功。
+- `./scripts/capture_screenshots.sh` 成功（每个目标状态均已产出截图）。
+- 世界态重复帧问题已闭环：
+  - `world_tokyo_real_explore.png` 与 `world_osaka_moments.png` 的 MD5 不同，说明参数注入链路恢复。
+
+### Known Issue Tracker
+
+- 当前版本仍以“截图状态快照”覆盖交互回溯，真实点击链路（如直接从 world 地标进入聊天）仍建议在后续加入自动化触发脚本补齐。
+
+## 0.3.8 - 2026-06-21
+
+### Scope
+
+补齐“每个界面和关键操作”的截图质检闭环，补充可追踪的操作流动节点，并修正世界截图参数链路中的无效地标引用。
+
+### Changed
+
+- 截图流水线再次扩展为 12 个关键节点（`artifacts/screenshots/`）：
+  - 家人：拓扑紧凑、拓扑展开、列表。
+  - 世界：上海真实3D/卡通3D、东京探索+Moments、名古屋探索、大阪Moments、香港关系网络/Moments、世界UI收起。
+  - 上传、身份。
+- 补上世界操作链中的“操作映射”节点：
+  - `world_hk_moments_focus` 与 `world_tokyo_moments` 明确用于验证“探索→Moments”切换后的聚焦一致性。
+- 修正截图参数：
+  - `world_hk_moments_focus` 的默认地标从不存在的 `central-harbour` 改为有效 `victoria-harbour`，避免回退首选地标导致状态误判。
+- `artifacts/screenshot-qa-pass.md` 迭代为“质检+动线”同文档结构，加入操作链 Mermaid 连线。
+
+### Verification
+
+- `./scripts/build_ios.sh` 成功。
+- `./scripts/capture_screenshots.sh` 成功执行，生成 12 张截图（MD5 全量去重）。
+- 文档更新：`artifacts/screenshot-qa-pass.md`。
+- 当前可复现操作链：
+  - 家人拓扑紧凑 → 扩张 → 列表。
+  - 世界上海→东京→名古屋→大阪→香港的链路逐级切换。
+  - 世界 HUD 收起与恢复。
+
+## 0.3.10 - 2026-06-21
+
+### Scope
+
+继续执行“可见问题无阻断级优化”闭环：修复截图链路抖动导致的误报，并将版本历史更新与验收记录同步到最新状态。
+
+### Changed
+
+- `scripts/capture_screenshots.sh`：
+  - 增加截图等待时间环境变量 `CARTOON_SCREENSHOT_DELAY_SECONDS`，默认 5.0 秒，提升 MapKit 场景就绪稳定性。
+- `scripts/qa_verify_screenshots.sh`：
+  - 调整最小文件阈值到 `60000`，避免对大量透明区域场景的误报。
+- `artifacts/screenshot-qa-pass.md`：
+  - 更新为版本 `0.3.10-SNAPSHOT`，补充截图等待参数化与本轮修复说明。
+
+### Verification
+
+- `./scripts/build_ios.sh` 成功。
+- `./scripts/capture_screenshots.sh` 成功，恢复到 15 张关键截图，`world_hk_relations.png` 回归到正常体积（3.6MB）。
+- `./scripts/qa_verify_screenshots.sh` 成功：
+  - `PASS_COUNT=15`
+  - `FAIL_COUNT=0`
+  - `RESULT=OK`
+
+## 0.3.5 - 2026-06-21
+
+### Scope
+
+基于你最后的反馈继续优化家人拓扑与头部交互，减少“线条凌乱”和“按钮跳动”的信息噪音。
+
+### Changed
+
+- 关系拓扑连线改为统一折线策略（`topologyFoldedPath`）：
+  - 每条关系都保持“先下折线再横向再下行”的结构，即使几何上接近平行也有明显折点。
+  - 新增家人入口连线也沿用同一折线规则，避免突兀直线刺穿节点。
+- 拓扑起点与排列参数细化：
+  - 适度下调拓扑中心高度与行距，让节点在有限高度内按层级落位，维持块状秩序。
+- 头部控制压缩与对齐收口：
+  - 顶部右侧按钮组高度统一并更小。
+  - “收起”改为图标按钮保持和“三个行为按钮”视觉一致。
+  - 非本人模式顶部按钮宽度统一，减少顶端抬高感。
+- 继续保持：底部语音/视频仍保持与输入框同高的方形压缩样式。

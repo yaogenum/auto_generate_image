@@ -20,7 +20,7 @@ struct MediaImportView: View {
                 VStack(alignment: .leading, spacing: 8) {
                     Text("把真实素材变成地图积木")
                         .font(.title2.bold())
-                    Text("选择上海、东京或香港地点后上传照片或视频。当前版本会在本地生成卡通调色板和贡献状态，后续可接入生成式卡通化服务。")
+                    Text("选择上海、东京、大阪、名古屋或香港地点后上传照片或视频。当前版本会在本地生成卡通调色板和贡献状态，并把图片挂到对应地标的合集和 Moments 面板。")
                         .font(.subheadline)
                         .foregroundStyle(.secondary)
                 }

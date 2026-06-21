@@ -4,6 +4,7 @@ struct CartoonCityOverlay: View {
     let selectedPlace: WorldPlace
     let places: [WorldPlace]
     let contributions: [MediaContribution]
+    let momentCountByPlace: [String: Int]
 
     var body: some View {
         GeometryReader { proxy in
@@ -25,6 +26,7 @@ struct CartoonCityOverlay: View {
                     CartoonBuildingCluster(
                         place: place,
                         contributionCount: contributions.filter { $0.placeID == place.id }.count,
+                        momentCount: momentCountByPlace[place.id, default: 0],
                         isSelected: place.id == selectedPlace.id
                     )
                     .position(position)
@@ -54,6 +56,7 @@ struct CartoonCityOverlay: View {
 private struct CartoonBuildingCluster: View {
     let place: WorldPlace
     let contributionCount: Int
+    let momentCount: Int
     let isSelected: Bool
 
     var body: some View {
@@ -75,6 +78,21 @@ private struct CartoonBuildingCluster: View {
                         .padding(7)
                         .background(.black.opacity(0.55), in: Circle())
                         .offset(x: 36, y: -42)
+                }
+
+                if momentCount > 0 {
+                    Image(systemName: "sparkles")
+                        .font(.caption.weight(.bold))
+                        .foregroundStyle(.white)
+                        .padding(6)
+                        .background(.purple.opacity(0.85), in: Circle())
+                        .overlay(
+                            Text("\(momentCount)")
+                                .font(.caption2.bold())
+                                .foregroundStyle(.white),
+                            alignment: .center
+                        )
+                        .offset(x: -38, y: -44)
                 }
             }
 

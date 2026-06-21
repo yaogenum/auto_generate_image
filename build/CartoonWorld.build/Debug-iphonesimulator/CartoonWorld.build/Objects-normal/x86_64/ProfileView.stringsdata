@@ -63,7 +63,7 @@
         "key": "%@ · %@",
         "location": {
           "startingColumn": 22,
-          "startingLine": 83
+          "startingLine": 85
         }
       },
       {
@@ -71,7 +71,7 @@
         "key": "已注册",
         "location": {
           "startingColumn": 55,
-          "startingLine": 74
+          "startingLine": 76
         }
       },
       {
@@ -79,7 +79,7 @@
         "key": "游客",
         "location": {
           "startingColumn": 69,
-          "startingLine": 74
+          "startingLine": 76
         }
       },
       {
@@ -87,7 +87,119 @@
         "key": "世界进度",
         "location": {
           "startingColumn": 18,
-          "startingLine": 103
+          "startingLine": 105
+        }
+      },
+      {
+        "comment": "",
+        "key": "我与数字分身",
+        "location": {
+          "startingColumn": 18,
+          "startingLine": 125
+        }
+      },
+      {
+        "comment": "",
+        "key": "默认由你的数字分身先与其他家人的数字分身进行 social；只有遇到问题时，才把 issue 提给本人确认。",
+        "location": {
+          "startingColumn": 18,
+          "startingLine": 128
+        }
+      },
+      {
+        "comment": "",
+        "key": "切回本人在线",
+        "location": {
+          "startingColumn": 24,
+          "startingLine": 158
+        }
+      },
+      {
+        "comment": "",
+        "key": "模拟长时间未登录",
+        "location": {
+          "startingColumn": 24,
+          "startingLine": 165
+        }
+      },
+      {
+        "comment": "",
+        "key": "当前托管状态",
+        "location": {
+          "startingColumn": 22,
+          "startingLine": 172
+        }
+      },
+      {
+        "comment": "",
+        "key": "最近本人接管：%@",
+        "location": {
+          "startingColumn": 22,
+          "startingLine": 180
+        }
+      },
+      {
+        "comment": "",
+        "key": "你已超过 72 小时未接管，数字分身已进入全托管模式。",
+        "location": {
+          "startingColumn": 24,
+          "startingLine": 176
+        }
+      },
+      {
+        "comment": "",
+        "key": "本人最近在线，当前策略为：%@。",
+        "location": {
+          "startingColumn": 24,
+          "startingLine": 177
+        }
+      },
+      {
+        "comment": "",
+        "key": "当前没有需要你确认的问题，数字分身可以继续保持对外社交。",
+        "location": {
+          "startingColumn": 26,
+          "startingLine": 196
+        }
+      },
+      {
+        "comment": "",
+        "key": "待确认 issue",
+        "location": {
+          "startingColumn": 26,
+          "startingLine": 187
+        }
+      },
+      {
+        "comment": "",
+        "key": "%lld",
+        "location": {
+          "startingColumn": 26,
+          "startingLine": 190
+        }
+      },
+      {
+        "comment": "",
+        "key": "建议回复：%@",
+        "location": {
+          "startingColumn": 34,
+          "startingLine": 207
+        }
+      },
+      {
+        "comment": "",
+        "key": "确认发送",
+        "location": {
+          "startingColumn": 40,
+          "startingLine": 211
+        }
+      },
+      {
+        "comment": "",
+        "key": "本人接管",
+        "location": {
+          "startingColumn": 40,
+          "startingLine": 218
         }
       }
     ]

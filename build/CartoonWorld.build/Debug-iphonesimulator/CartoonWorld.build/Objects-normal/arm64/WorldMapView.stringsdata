@@ -4,10 +4,18 @@
     "Localizable": [
       {
         "comment": "",
+        "key": "展开界面",
+        "location": {
+          "startingColumn": 35,
+          "startingLine": 127
+        }
+      },
+      {
+        "comment": "",
         "key": "%@数字世界",
         "location": {
           "startingColumn": 26,
-          "startingLine": 71
+          "startingLine": 192
         }
       },
       {
@@ -15,31 +23,47 @@
         "key": "城市",
         "location": {
           "startingColumn": 28,
-          "startingLine": 83
+          "startingLine": 204
         }
       },
       {
         "comment": "",
-        "key": "探索面板",
+        "key": "收起界面",
+        "location": {
+          "startingColumn": 27,
+          "startingLine": 232
+        }
+      },
+      {
+        "comment": "",
+        "key": "世界面板",
         "location": {
           "startingColumn": 26,
-          "startingLine": 122
+          "startingLine": 260
         }
       },
       {
         "comment": "",
         "key": "收起",
         "location": {
-          "startingColumn": 45,
-          "startingLine": 136
+          "startingColumn": 63,
+          "startingLine": 278
         }
       },
       {
         "comment": "",
         "key": "展开",
         "location": {
-          "startingColumn": 56,
-          "startingLine": 136
+          "startingColumn": 74,
+          "startingLine": 278
+        }
+      },
+      {
+        "comment": "",
+        "key": "世界视图",
+        "location": {
+          "startingColumn": 28,
+          "startingLine": 403
         }
       },
       {
@@ -47,7 +71,7 @@
         "key": "%@ · %@",
         "location": {
           "startingColumn": 22,
-          "startingLine": 171
+          "startingLine": 340
         }
       },
       {
@@ -55,15 +79,15 @@
         "key": "%@ · 探索 %lld%%",
         "location": {
           "startingColumn": 22,
-          "startingLine": 174
+          "startingLine": 343
         }
       },
       {
         "comment": "",
-        "key": "城市",
+        "key": "素材%lld · 时刻%lld",
         "location": {
-          "startingColumn": 20,
-          "startingLine": 199
+          "startingColumn": 22,
+          "startingLine": 346
         }
       },
       {
@@ -71,7 +95,119 @@
         "key": "模式",
         "location": {
           "startingColumn": 20,
-          "startingLine": 206
+          "startingLine": 379
+        }
+      },
+      {
+        "comment": "",
+        "key": "%@ · %@ · %@",
+        "location": {
+          "startingColumn": 26,
+          "startingLine": 449
+        }
+      },
+      {
+        "comment": "",
+        "key": "%lld",
+        "location": {
+          "startingColumn": 26,
+          "startingLine": 461
+        }
+      },
+      {
+        "comment": "",
+        "key": "素材",
+        "location": {
+          "startingColumn": 26,
+          "startingLine": 463
+        }
+      },
+      {
+        "comment": "",
+        "key": "%lld Moments",
+        "location": {
+          "startingColumn": 26,
+          "startingLine": 466
+        }
+      },
+      {
+        "comment": "",
+        "key": "%lld",
+        "location": {
+          "startingColumn": 18,
+          "startingLine": 542
+        }
+      },
+      {
+        "comment": "",
+        "key": "先在家庭页新增家人，再回来配置关系网络",
+        "location": {
+          "startingColumn": 22,
+          "startingLine": 577
+        }
+      },
+      {
+        "comment": "",
+        "key": "去聊天",
+        "location": {
+          "startingColumn": 40,
+          "startingLine": 607
+        }
+      },
+      {
+        "comment": "",
+        "key": "快速标注",
+        "location": {
+          "startingColumn": 43,
+          "startingLine": 603
+        }
+      },
+      {
+        "comment": "",
+        "key": "当前城市还没有 Moments，先从地图标记 POI 进行记录",
+        "location": {
+          "startingColumn": 22,
+          "startingLine": 643
+        }
+      },
+      {
+        "comment": "",
+        "key": "当前城市时刻热区",
+        "location": {
+          "startingColumn": 22,
+          "startingLine": 699
+        }
+      },
+      {
+        "comment": "",
+        "key": "Moments",
+        "location": {
+          "startingColumn": 22,
+          "startingLine": 633
+        }
+      },
+      {
+        "comment": "",
+        "key": "共 %lld 条",
+        "location": {
+          "startingColumn": 22,
+          "startingLine": 637
+        }
+      },
+      {
+        "comment": "",
+        "key": "%@ · %@",
+        "location": {
+          "startingColumn": 46,
+          "startingLine": 673
+        }
+      },
+      {
+        "comment": "",
+        "key": "%@ · %lld",
+        "location": {
+          "startingColumn": 42,
+          "startingLine": 713
         }
       },
       {
@@ -79,7 +215,7 @@
         "key": "%@数字世界",
         "location": {
           "startingColumn": 22,
-          "startingLine": 226
+          "startingLine": 734
         }
       },
       {
@@ -87,7 +223,15 @@
         "key": "%@ · 当前 %@",
         "location": {
           "startingColumn": 22,
-          "startingLine": 228
+          "startingLine": 736
+        }
+      },
+      {
+        "comment": "",
+        "key": "%@ · %@",
+        "location": {
+          "startingColumn": 22,
+          "startingLine": 744
         }
       },
       {
@@ -95,15 +239,55 @@
         "key": "追踪目标：%@",
         "location": {
           "startingColumn": 22,
-          "startingLine": 256
+          "startingLine": 764
         }
       },
       {
         "comment": "",
-        "key": "%@ · %lld 个素材",
+        "key": "%lld",
+        "location": {
+          "startingColumn": 38,
+          "startingLine": 857
+        }
+      },
+      {
+        "comment": "",
+        "key": "%@ · %lld 素材 · %lld Moments",
         "location": {
           "startingColumn": 22,
-          "startingLine": 458
+          "startingLine": 955
+        }
+      },
+      {
+        "comment": "",
+        "key": "关联时刻：%@",
+        "location": {
+          "startingColumn": 22,
+          "startingLine": 1091
+        }
+      },
+      {
+        "comment": "",
+        "key": "还没有聊天记录，当前地标会在后续成为这个家人的旅行聊天落点。",
+        "location": {
+          "startingColumn": 22,
+          "startingLine": 1106
+        }
+      },
+      {
+        "comment": "",
+        "key": "可联系",
+        "location": {
+          "startingColumn": 27,
+          "startingLine": 1084
+        }
+      },
+      {
+        "comment": "",
+        "key": "去家人页聊这条",
+        "location": {
+          "startingColumn": 26,
+          "startingLine": 1115
         }
       }
     ]

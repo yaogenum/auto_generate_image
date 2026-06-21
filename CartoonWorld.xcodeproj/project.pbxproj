@@ -18,6 +18,8 @@
 		A10000000000000000000029 /* ProfileView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A10000000000000000000019 /* ProfileView.swift */; };
 		A1000000000000000000002A /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = A1000000000000000000001A /* Assets.xcassets */; };
 		A1000000000000000000002B /* CartoonWorldSceneView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1000000000000000000001B /* CartoonWorldSceneView.swift */; };
+		A1000000000000000000002C /* FamilyHubView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1000000000000000000002D /* FamilyHubView.swift */; };
+		A1000000000000000000002E /* images in Resources */ = {isa = PBXBuildFile; fileRef = A1000000000000000000002F /* images */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -33,6 +35,8 @@
 		A10000000000000000000019 /* ProfileView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProfileView.swift; sourceTree = "<group>"; };
 		A1000000000000000000001A /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		A1000000000000000000001B /* CartoonWorldSceneView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CartoonWorldSceneView.swift; sourceTree = "<group>"; };
+		A1000000000000000000002D /* FamilyHubView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FamilyHubView.swift; sourceTree = "<group>"; };
+		A1000000000000000000002F /* images */ = {isa = PBXFileReference; lastKnownFileType = folder; path = images; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedRootGroup section */
@@ -53,6 +57,7 @@
 			isa = PBXGroup;
 			children = (
 				A10000000000000000000010 /* CartoonWorld */,
+				A1000000000000000000002F /* images */,
 				A10000000000000000000003 /* Products */,
 			);
 			sourceTree = "<group>";
@@ -74,6 +79,7 @@
 				A10000000000000000000014 /* WorldModel.swift */,
 				A10000000000000000000015 /* WorldMapView.swift */,
 				A1000000000000000000001B /* CartoonWorldSceneView.swift */,
+				A1000000000000000000002D /* FamilyHubView.swift */,
 				A10000000000000000000016 /* CartoonCityOverlay.swift */,
 				A10000000000000000000017 /* AvatarPanel.swift */,
 				A10000000000000000000018 /* MediaImportView.swift */,
@@ -146,6 +152,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				A1000000000000000000002A /* Assets.xcassets in Resources */,
+				A1000000000000000000002E /* images in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -166,6 +173,7 @@
 				A10000000000000000000028 /* MediaImportView.swift in Sources */,
 				A10000000000000000000029 /* ProfileView.swift in Sources */,
 				A1000000000000000000002B /* CartoonWorldSceneView.swift in Sources */,
+				A1000000000000000000002C /* FamilyHubView.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

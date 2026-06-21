@@ -4,10 +4,26 @@
     "Localizable": [
       {
         "comment": "",
+        "key": "家人",
+        "location": {
+          "startingColumn": 34,
+          "startingLine": 80
+        }
+      },
+      {
+        "comment": "",
+        "key": "家人",
+        "location": {
+          "startingColumn": 30,
+          "startingLine": 82
+        }
+      },
+      {
+        "comment": "",
         "key": "卡通世界",
         "location": {
-          "startingColumn": 38,
-          "startingLine": 11
+          "startingColumn": 34,
+          "startingLine": 98
         }
       },
       {
@@ -15,7 +31,7 @@
         "key": "世界",
         "location": {
           "startingColumn": 30,
-          "startingLine": 15
+          "startingLine": 101
         }
       },
       {
@@ -23,7 +39,7 @@
         "key": "融入地图",
         "location": {
           "startingColumn": 38,
-          "startingLine": 20
+          "startingLine": 106
         }
       },
       {
@@ -31,7 +47,7 @@
         "key": "上传",
         "location": {
           "startingColumn": 30,
-          "startingLine": 22
+          "startingLine": 108
         }
       },
       {
@@ -39,7 +55,7 @@
         "key": "数字人",
         "location": {
           "startingColumn": 38,
-          "startingLine": 27
+          "startingLine": 113
         }
       },
       {
@@ -47,7 +63,7 @@
         "key": "身份",
         "location": {
           "startingColumn": 30,
-          "startingLine": 29
+          "startingLine": 115
         }
       }
     ]
