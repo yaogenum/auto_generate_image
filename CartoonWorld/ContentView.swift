@@ -68,6 +68,7 @@ struct ContentView: View {
     @State private var initialSelectedPlaceID: String? = nil
     @State private var isAutoDemoRunning = false
     @State private var autoDemoTask: Task<Void, Never>? = nil
+    @State private var autoDemoStage: String = ""
 
     var body: some View {
         TabView(selection: $selectedTab) {
@@ -103,19 +104,27 @@ struct ContentView: View {
 
             NavigationStack {
                 MediaImportView()
-                    .navigationTitle("融入地图")
+                    .navigationTitle("记录 Moment")
             }
-            .tabItem { Label("上传", systemImage: "photo.badge.plus") }
+            .tabItem { Label("记录", systemImage: "photo.badge.plus") }
             .tag(AppTab.upload)
 
             NavigationStack {
                 ProfileView()
-                    .navigationTitle("数字人")
+                    .navigationTitle("分身控制台")
             }
-            .tabItem { Label("身份", systemImage: "person.crop.circle") }
+            .tabItem { Label("分身", systemImage: "person.crop.circle") }
             .tag(AppTab.profile)
         }
         .tint(.mint)
+        .overlay(alignment: .topLeading) {
+            if !autoDemoStage.isEmpty {
+                AutoDemoStageBadge(stage: autoDemoStage)
+                    .padding(.top, 10)
+                    .padding(.leading, 12)
+                    .allowsHitTesting(false)
+            }
+        }
         .onAppear {
             if let overrideTab = debugTab {
                 selectedTab = overrideTab
@@ -159,6 +168,7 @@ struct ContentView: View {
             autoDemoTask?.cancel()
             autoDemoTask = nil
             isAutoDemoRunning = false
+            autoDemoStage = ""
         }
     }
 
@@ -174,15 +184,18 @@ struct ContentView: View {
     private func runAutoDemoFlow() async {
         guard world.familyMembers.count > 1 else {
             isAutoDemoRunning = false
+            autoDemoStage = ""
             return
         }
 
         let delay = UInt64((debugAutoDemoStepDelayMs ?? 900) * 1_000_000)
         let familyMemberID = world.selectFirstExternalFamilyMember() ?? world.familyMembers.first(where: { !$0.isSelf })?.id ?? world.selectedFamilyMemberID
 
+        setAutoDemoStage("01 家人关系网络")
         selectedTab = .family
-        initialFamilyLayout = .list
+        initialFamilyLayout = .topology
         initialFamilyExpanded = true
+        world.isFamilyChatExpanded = false
         await sleepAsync(delay)
 
         if let memberID = world.familyMembers.first(where: { $0.id == familyMemberID })?.id {
@@ -190,6 +203,7 @@ struct ContentView: View {
             await sleepAsync(delay)
         }
 
+        setAutoDemoStage("02 分身代聊")
         world.isFamilyChatExpanded = true
         await sleepAsync(delay)
 
@@ -204,12 +218,15 @@ struct ContentView: View {
             world.simulateCommunication(to: targetID, isVideo: true)
         }
 
-        await sleepAsync(delay * 2)
-        selectedTab = .world
         await sleepAsync(delay)
-
-        UserDefaults.standard.set(WorldCity.tokyo.rawValue, forKey: "CartoonWorld.world.selectedCity")
-        UserDefaults.standard.set(WorldDisplayMode.real3D.rawValue, forKey: "CartoonWorld.world.displayMode")
+        setAutoDemoStage("03 东京地点")
+        initialCity = .tokyo
+        initialDisplayMode = .real3D
+        initialPanelSection = .explore
+        initialPanelExpanded = true
+        initialUIHidden = false
+        initialSelectedPlaceID = "tokyo-tower"
+        selectedTab = .world
         if let tokyoTower = world.places.first(where: { $0.id == "tokyo-tower" }) {
             world.selectedPlaceID = tokyoTower.id
         }
@@ -218,29 +235,50 @@ struct ContentView: View {
         world.isWorldUIHidden = false
         await sleepAsync(delay)
 
+        setAutoDemoStage("04 大阪Moments")
+        initialCity = .osaka
+        initialPanelSection = .moments
+        initialSelectedPlaceID = "osaka-castle"
         if let osakaPlace = world.places.first(where: { $0.id == "osaka-castle" }) {
             world.selectedPlaceID = osakaPlace.id
             world.worldPanelSection = .moments
         }
         await sleepAsync(delay)
 
+        setAutoDemoStage("05 香港家人互动")
+        initialCity = .hongKong
+        initialPanelSection = .relations
+        initialSelectedPlaceID = "victoria-harbour"
         if let hkPlace = world.places.first(where: { $0.id == "victoria-harbour" }) {
             world.selectedPlaceID = hkPlace.id
             world.worldPanelSection = .relations
         }
         await sleepAsync(delay)
 
+        setAutoDemoStage("06 记录Moment")
         selectedTab = .upload
         await sleepAsync(delay * 2)
 
+        setAutoDemoStage("07 分身控制台")
         selectedTab = .profile
         await sleepAsync(delay * 2)
 
+        setAutoDemoStage("08 回到家人")
         if let momID = world.familyMembers.first(where: { !$0.isSelf })?.id {
             world.selectFamilyMember(id: momID)
         }
+        initialFamilyLayout = .list
+        initialFamilyExpanded = false
+        world.isFamilyChatExpanded = false
         selectedTab = .family
+        await sleepAsync(delay)
+        autoDemoStage = ""
         isAutoDemoRunning = false
+    }
+
+    @MainActor
+    private func setAutoDemoStage(_ stage: String) {
+        autoDemoStage = stage
     }
 
     private func sleepAsync(_ nanos: UInt64) async {
@@ -249,6 +287,18 @@ struct ContentView: View {
 
     private var debugTab: AppTab? {
         guard let raw = debugValue("CARTOON_INITIAL_TAB")?.trimmingCharacters(in: .whitespacesAndNewlines) else { return nil }
+        switch raw.lowercased() {
+        case "家人", "family":
+            return .family
+        case "世界", "world":
+            return .world
+        case "记录", "moment", "moments", "upload":
+            return .upload
+        case "分身", "身份", "profile", "avatar":
+            return .profile
+        default:
+            break
+        }
         return AppTab.allCases.first(where: { $0.rawValue.lowercased() == raw.lowercased() })
     }
 
@@ -307,7 +357,22 @@ struct ContentView: View {
     }
 
     private var debugWorldPanelSection: WorldPanelSection? {
-        return debugEnumMatch("CARTOON_INITIAL_WORLD_PANEL_SECTION", candidates: Array(WorldPanelSection.allCases))
+        guard let raw = debugValue("CARTOON_INITIAL_WORLD_PANEL_SECTION")?
+            .trimmingCharacters(in: .whitespacesAndNewlines)
+            .lowercased() else { return nil }
+
+        switch raw {
+        case "探索", "地点", "place", "places", "explore":
+            return .explore
+        case "moments", "moment", "时刻":
+            return .moments
+        case "关系网络", "家人互动", "relations", "family", "interaction", "interactions":
+            return .relations
+        default:
+            return WorldPanelSection.allCases.first {
+                $0.rawValue.lowercased() == raw
+            }
+        }
     }
 
     private var debugWorldPanelExpanded: Bool? {
@@ -339,6 +404,20 @@ private enum AppTab: String, Hashable, CaseIterable {
     case world = "world"
     case upload = "upload"
     case profile = "profile"
+}
+
+private struct AutoDemoStageBadge: View {
+    let stage: String
+
+    var body: some View {
+        Label("巡检 \(stage)", systemImage: "checklist.checked")
+            .font(.caption2.weight(.bold))
+            .foregroundStyle(.white)
+            .padding(.horizontal, 10)
+            .padding(.vertical, 6)
+            .background(Color.black.opacity(0.72), in: Capsule())
+            .shadow(color: .black.opacity(0.16), radius: 8, y: 4)
+    }
 }
 
 #Preview {

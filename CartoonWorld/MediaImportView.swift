@@ -18,9 +18,9 @@ struct MediaImportView: View {
         ScrollView {
             VStack(alignment: .leading, spacing: 18) {
                 VStack(alignment: .leading, spacing: 8) {
-                    Text("把真实素材变成地图积木")
+                    Text("记录一个地点 Moment")
                         .font(.title2.bold())
-                    Text("选择上海、东京、大阪、名古屋或香港地点后上传照片或视频。当前版本会在本地生成卡通调色板和贡献状态，并把图片挂到对应地标的合集和 Moments 面板。")
+                    Text("选择城市地点，上传照片或视频。保存后会同时生成地图素材和一条 Moment，出现在世界页的地点、Moments 和家人互动里。")
                         .font(.subheadline)
                         .foregroundStyle(.secondary)
                 }
@@ -63,18 +63,30 @@ struct MediaImportView: View {
                 previewCard
 
                 Button {
+                    let normalizedTitle = title.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty ? "新的地点 Moment" : title
                     world.addContribution(
                         placeID: selectedPlaceID,
-                        title: title,
+                        title: normalizedTitle,
                         mediaKind: pendingKind,
                         rawData: pendingData
                     )
+                    if let place = world.places.first(where: { $0.id == selectedPlaceID }) {
+                        let memberID = world.selectedFamilyMember.isSelf
+                            ? (world.familyMembers.first(where: { !$0.isSelf })?.id ?? world.selectedFamilyMember.id)
+                            : world.selectedFamilyMember.id
+                        world.addFamilyMoment(
+                            title: normalizedTitle,
+                            note: "从真实\(pendingKind.rawValue)生成，已绑定到 \(place.name)。",
+                            memberID: memberID,
+                            place: place
+                        )
+                    }
                     world.moveAvatar(to: selectedPlaceID)
                     title = ""
                     pendingData = nil
                     selectedItem = nil
                 } label: {
-                    Label("卡通化并融入地图", systemImage: "wand.and.stars")
+                    Label("生成 Moment 并融入地图", systemImage: "wand.and.stars")
                         .frame(maxWidth: .infinity)
                 }
                 .buttonStyle(.borderedProminent)
@@ -134,11 +146,11 @@ struct MediaImportView: View {
 
     private var contributionQueue: some View {
         VStack(alignment: .leading, spacing: 12) {
-            Text("世界资产队列")
+            Text("最近记录")
                 .font(.headline)
 
             if world.contributions.isEmpty {
-                Text("还没有上传素材。第一条贡献会出现在地图地点和数字人生活流里。")
+                Text("还没有记录。第一条 Moment 会出现在地图地点和家人互动里。")
                     .font(.subheadline)
                     .foregroundStyle(.secondary)
             } else {

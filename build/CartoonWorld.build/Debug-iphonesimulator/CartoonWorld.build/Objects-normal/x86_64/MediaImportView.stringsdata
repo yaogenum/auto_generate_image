@@ -20,7 +20,7 @@
       },
       {
         "comment": "",
-        "key": "把真实素材变成地图积木",
+        "key": "记录一个地点 Moment",
         "location": {
           "startingColumn": 26,
           "startingLine": 21
@@ -28,7 +28,7 @@
       },
       {
         "comment": "",
-        "key": "选择上海、东京、大阪、名古屋或香港地点后上传照片或视频。当前版本会在本地生成卡通调色板和贡献状态，并把图片挂到对应地标的合集和 Moments 面板。",
+        "key": "选择城市地点，上传照片或视频。保存后会同时生成地图素材和一条 Moment，出现在世界页的地点、Moments 和家人互动里。",
         "location": {
           "startingColumn": 26,
           "startingLine": 23
@@ -60,10 +60,10 @@
       },
       {
         "comment": "",
-        "key": "卡通化并融入地图",
+        "key": "生成 Moment 并融入地图",
         "location": {
           "startingColumn": 27,
-          "startingLine": 77
+          "startingLine": 89
         }
       },
       {
@@ -71,7 +71,7 @@
         "key": "上传后会生成一张卡通缩略图，并作为该地点的世界资产。",
         "location": {
           "startingColumn": 39,
-          "startingLine": 126
+          "startingLine": 138
         }
       },
       {
@@ -79,7 +79,7 @@
         "key": "还没有素材",
         "location": {
           "startingColumn": 21,
-          "startingLine": 124
+          "startingLine": 136
         }
       },
       {
@@ -87,23 +87,23 @@
         "key": "卡通化预览",
         "location": {
           "startingColumn": 23,
-          "startingLine": 97
+          "startingLine": 109
         }
       },
       {
         "comment": "",
-        "key": "世界资产队列",
+        "key": "最近记录",
         "location": {
           "startingColumn": 18,
-          "startingLine": 137
+          "startingLine": 149
         }
       },
       {
         "comment": "",
-        "key": "还没有上传素材。第一条贡献会出现在地图地点和数字人生活流里。",
+        "key": "还没有记录。第一条 Moment 会出现在地图地点和家人互动里。",
         "location": {
           "startingColumn": 22,
-          "startingLine": 141
+          "startingLine": 153
         }
       },
       {
@@ -111,7 +111,7 @@
         "key": "%@ · %@",
         "location": {
           "startingColumn": 22,
-          "startingLine": 189
+          "startingLine": 201
         }
       }
     ]

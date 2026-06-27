@@ -4,7 +4,6 @@ struct FamilyHubView: View {
     @Environment(WorldModel.self) private var world
     @Environment(\.openURL) private var openURL
     @State private var messageDraft = ""
-    @State private var showFamilyManager = false
     @FocusState private var isComposerFocused: Bool
     @State private var contactLayout: FamilyContactLayout = .topology
     @State private var isComposerCallTrayExpanded = false
@@ -39,15 +38,6 @@ struct FamilyHubView: View {
                 Spacer(minLength: 0)
             }
         }
-        .toolbar {
-            ToolbarItem(placement: .topBarTrailing) {
-                Button {
-                    showFamilyManager = true
-                } label: {
-                    Label("家人管理", systemImage: "person.2.fill")
-                }
-            }
-        }
         .onAppear {
             world.addDefaultMomentsIfNeeded(for: world.selectedFamilyMember.id)
             world.ensureScenePromptsIfNeeded(for: world.selectedFamilyMember.id)
@@ -59,10 +49,6 @@ struct FamilyHubView: View {
             world.ensureScenePromptsIfNeeded(for: newValue)
             world.isFamilyChatExpanded = false
             isComposerCallTrayExpanded = false
-        }
-        .sheet(isPresented: $showFamilyManager) {
-            FamilyManagementSheet()
-                .environment(world)
         }
     }
 
@@ -438,6 +424,7 @@ struct FamilyHubView: View {
         .padding(10)
         .background(.ultraThinMaterial, in: RoundedRectangle(cornerRadius: 14))
         .padding(14)
+        .padding(.bottom, 20)
         .animation(.easeInOut(duration: 0.2), value: world.isFamilyChatExpanded)
     }
 
@@ -452,6 +439,7 @@ struct FamilyHubView: View {
         .padding(14)
         .background(.ultraThinMaterial, in: RoundedRectangle(cornerRadius: 14))
         .padding(14)
+        .padding(.bottom, 18)
         .layoutPriority(1)
         .animation(.easeInOut(duration: 0.2), value: world.isFamilyChatExpanded)
     }

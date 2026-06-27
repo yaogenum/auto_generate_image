@@ -273,9 +273,9 @@ enum WorldDisplayMode: String, CaseIterable, Hashable {
 }
 
 enum WorldPanelSection: String, CaseIterable {
-    case explore = "探索"
+    case explore = "地点"
     case moments = "Moments"
-    case relations = "关系网络"
+    case relations = "家人互动"
 
     var title: String { rawValue }
 }

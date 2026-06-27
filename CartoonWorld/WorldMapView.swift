@@ -143,6 +143,26 @@ struct WorldMapView: View {
             applyLaunchOverrides()
             ensureSelection(in: world.places.filter { $0.city == selectedCity })
         }
+        .onChange(of: initialCity) { _, _ in
+            applyLaunchOverrides()
+            ensureSelection(in: world.places.filter { $0.city == selectedCity })
+        }
+        .onChange(of: initialDisplayMode) { _, _ in
+            applyLaunchOverrides()
+        }
+        .onChange(of: initialPanelSection) { _, _ in
+            applyLaunchOverrides()
+        }
+        .onChange(of: initialPanelExpanded) { _, _ in
+            applyLaunchOverrides()
+        }
+        .onChange(of: initialUIHidden) { _, _ in
+            applyLaunchOverrides()
+        }
+        .onChange(of: initialSelectedPlaceID) { _, _ in
+            applyLaunchOverrides()
+            ensureSelection(in: world.places.filter { $0.city == selectedCity })
+        }
         .onChange(of: selectedCityRaw) { _, _ in
             ensureSelection(in: world.places.filter { $0.city == selectedCity })
         }
@@ -301,8 +321,6 @@ struct WorldMapView: View {
                             visibleContributionCount: visibleContributionCount,
                             visibleMomentCount: visibleMomentCount
                         )
-                        worldHeader
-                        questTracker
                         placeCarousel(
                             visiblePlaces: visiblePlaces,
                             contributionCountByPlace: contributionCountByPlace,
@@ -316,7 +334,7 @@ struct WorldMapView: View {
                             momentCountByPlace: momentCountByPlace
                         )
                     case .relations:
-                        relationsPanel
+                        familyInteractionPanel
                     }
                 }
                 .transition(.move(edge: .bottom).combined(with: .opacity))
@@ -340,7 +358,7 @@ struct WorldMapView: View {
                 Text("\(selectedCity.rawValue) · \(world.selectedPlace.name)")
                     .font(.caption.weight(.semibold))
                     .lineLimit(1)
-                Text("\(displayMode.title) · 探索 \(explorationPercent(for: visiblePlaces))%")
+                Text("\(displayMode.title) · 地点 \(explorationPercent(for: visiblePlaces))%")
                     .font(.caption2)
                     .foregroundStyle(.secondary)
                 Text("素材\(visibleContributionCount) · 时刻\(visibleMomentCount)")
@@ -387,7 +405,7 @@ struct WorldMapView: View {
                 StatPill(title: "区域", value: "\(visiblePlaces.count)")
                 StatPill(title: "素材", value: "\(visibleContributionCount)")
                 StatPill(title: "Moments", value: "\(visibleMomentCount)")
-                StatPill(title: "探索", value: "\(explorationPercent(for: visiblePlaces))%")
+                StatPill(title: "覆盖", value: "\(explorationPercent(for: visiblePlaces))%")
             }
 
             if !visiblePlaces.isEmpty {
@@ -436,10 +454,6 @@ struct WorldMapView: View {
     private var selectedPlaceDetailPanel: some View {
         let place = world.selectedPlace
         let contributions = world.contributionsForSelectedPlace
-        let moments = world.moments(for: place)
-        let relatedMemberIDs = Array(Set(moments.map(\.memberID))).prefix(3)
-        let fallbackMembers = world.familyMembers.filter { !$0.isSelf }.prefix(2)
-        let memberIDs = relatedMemberIDs.isEmpty ? fallbackMembers.map(\.id) : Array(relatedMemberIDs)
 
         return VStack(alignment: .leading, spacing: 12) {
             HStack(alignment: .top, spacing: 10) {
@@ -463,15 +477,12 @@ struct WorldMapView: View {
                     Text("素材")
                         .font(.caption2)
                         .foregroundStyle(.secondary)
-                    Text("\(moments.count) Moments")
-                        .font(.caption2)
-                        .foregroundStyle(.secondary)
                 }
             }
 
             ScrollView {
                 VStack(alignment: .leading, spacing: 12) {
-                    placeSectionTitle("地标图片合集", count: contributions.count)
+                    placeSectionTitle("图片合集", count: contributions.count)
 
                     if contributions.isEmpty {
                         emptyStateCard(
@@ -487,47 +498,9 @@ struct WorldMapView: View {
                             )
                         }
                     }
-
-                    placeSectionTitle("Moments", count: moments.count)
-
-                    if moments.isEmpty {
-                        emptyStateCard(
-                            icon: "clock.badge",
-                            title: "当前地标还没有 Moments",
-                            subtitle: "地标下的 Moments 会把地点、图片和家人互动挂在同一条时间线上。"
-                        )
-                    } else {
-                        ForEach(moments) { moment in
-                            PlaceMomentRow(moment: moment, memberName: world.familyMemberName(for: moment.memberID))
-                        }
-                    }
-
-                    placeSectionTitle("家人互动 Demo", count: memberIDs.count)
-
-                    if memberIDs.isEmpty {
-                        emptyStateCard(
-                            icon: "person.2.slash",
-                            title: "当前还没有家人关系",
-                            subtitle: "先在家人页录入成员，这里会把聊天和旅行时刻关联到地标。"
-                        )
-                    } else {
-                        ForEach(memberIDs, id: \.self) { memberID in
-                            if let member = world.familyMembers.first(where: { $0.id == memberID }) {
-                                PlaceFamilyInteractionRow(
-                                    member: member,
-                                    relationLabel: world.relationLabel(fromSelfTo: member),
-                                    latestMoment: moments.first(where: { $0.memberID == memberID }),
-                                    latestMessage: (world.conversations[memberID] ?? []).sorted { $0.createdAt > $1.createdAt }.first,
-                                    onChatTapped: {
-                                        jumpToFamily(member.id)
-                                    }
-                                )
-                            }
-                        }
-                    }
                 }
             }
-            .frame(maxHeight: 340)
+            .frame(maxHeight: 260)
         }
         .padding(12)
         .background(.ultraThinMaterial, in: RoundedRectangle(cornerRadius: 8))
@@ -570,55 +543,61 @@ struct WorldMapView: View {
         .background(Color(uiColor: .secondarySystemBackground), in: RoundedRectangle(cornerRadius: 10))
     }
 
-    private var relationsPanel: some View {
-        let edges = world.networkRelationEdges
-        return VStack(spacing: 10) {
-            if edges.isEmpty {
-                Text("先在家庭页新增家人，再回来配置关系网络")
-                    .font(.caption)
+    private var familyInteractionPanel: some View {
+        let place = world.selectedPlace
+        let moments = world.moments(for: place)
+        let relatedMemberIDs = Array(Set(moments.map(\.memberID))).prefix(4)
+        let fallbackMembers = world.familyMembers.filter { !$0.isSelf }.prefix(3)
+        let memberIDs = relatedMemberIDs.isEmpty ? fallbackMembers.map(\.id) : Array(relatedMemberIDs)
+
+        return VStack(alignment: .leading, spacing: 10) {
+            HStack {
+                VStack(alignment: .leading, spacing: 3) {
+                    Text("家人互动")
+                        .font(.caption.weight(.semibold))
+                        .foregroundStyle(.secondary)
+                    Text(place.name)
+                        .font(.subheadline.weight(.semibold))
+                        .lineLimit(1)
+                }
+
+                Spacer()
+
+                Text("\(memberIDs.count) 人")
+                    .font(.caption2.weight(.bold))
                     .foregroundStyle(.secondary)
-                    .frame(maxWidth: .infinity)
-                    .padding(.vertical, 20)
+                    .padding(.horizontal, 8)
+                    .padding(.vertical, 3)
+                    .background(Color(uiColor: .secondarySystemBackground), in: Capsule())
+            }
+
+            if memberIDs.isEmpty {
+                emptyStateCard(
+                    icon: "person.2.slash",
+                    title: "当前还没有家人关系",
+                    subtitle: "先在家人页录入成员，聊天和旅行时刻会自动关联到地点。"
+                )
             } else {
-                ForEach(edges) { edge in
-                    if let target = world.familyMembers.first(where: { $0.id == edge.targetMemberID }) {
-                        VStack(spacing: 8) {
-                            HStack(spacing: 10) {
-                                Text(target.name)
-                                    .font(.subheadline.weight(.semibold))
-                                Text(edge.relationLabel)
-                                    .font(.caption)
-                                    .foregroundStyle(.secondary)
-                                Spacer()
-                            }
-
-                            HStack(spacing: 8) {
-                                Menu {
-                                    ForEach(FamilyRolePreset.familyDefaults + FamilyRolePreset.socialDefaults, id: \.self) { preset in
-                                        Button(preset.rawValue) {
-                                            world.setRelationship(for: target.id, to: preset.rawValue)
-                                        }
+                ScrollView {
+                    VStack(spacing: 8) {
+                        ForEach(memberIDs, id: \.self) { memberID in
+                            if let member = world.familyMembers.first(where: { $0.id == memberID }) {
+                                PlaceFamilyInteractionRow(
+                                    member: member,
+                                    relationLabel: world.relationLabel(fromSelfTo: member),
+                                    latestMoment: moments.first(where: { $0.memberID == memberID }),
+                                    latestMessage: (world.conversations[memberID] ?? []).sorted { $0.createdAt > $1.createdAt }.first,
+                                    onChatTapped: {
+                                        jumpToFamily(member.id)
                                     }
-                                } label: {
-                                    Label("快速标注", systemImage: "person.crop.circle.badge.plus")
-                                }
-                                .buttonStyle(.bordered)
-
-                                Button("去聊天") {
-                                    jumpToFamily(target.id)
-                                }
-                                .buttonStyle(.borderedProminent)
-                                .tint(.mint)
-                                Spacer()
+                                )
                             }
-
-                            Divider()
                         }
                     }
                 }
+                .frame(maxHeight: 260)
             }
         }
-        .frame(maxHeight: 280)
         .padding(12)
         .background(.ultraThinMaterial, in: RoundedRectangle(cornerRadius: 8))
     }

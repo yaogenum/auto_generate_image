@@ -4,10 +4,10 @@
     "Localizable": [
       {
         "comment": "",
-        "key": "注册数字人身份",
+        "key": "身份档案",
         "location": {
           "startingColumn": 26,
-          "startingLine": 18
+          "startingLine": 20
         }
       },
       {
@@ -15,7 +15,7 @@
         "key": "名字",
         "location": {
           "startingColumn": 31,
-          "startingLine": 21
+          "startingLine": 23
         }
       },
       {
@@ -23,7 +23,7 @@
         "key": "身份，例如：城市建筑师",
         "location": {
           "startingColumn": 31,
-          "startingLine": 23
+          "startingLine": 25
         }
       },
       {
@@ -31,7 +31,7 @@
         "key": "常驻区域",
         "location": {
           "startingColumn": 31,
-          "startingLine": 25
+          "startingLine": 27
         }
       },
       {
@@ -39,7 +39,7 @@
         "key": "生活宣言",
         "location": {
           "startingColumn": 31,
-          "startingLine": 27
+          "startingLine": 29
         }
       },
       {
@@ -47,7 +47,7 @@
         "key": "保存身份",
         "location": {
           "startingColumn": 31,
-          "startingLine": 40
+          "startingLine": 42
         }
       },
       {
@@ -55,7 +55,7 @@
         "key": "重新分配游客身份",
         "location": {
           "startingColumn": 31,
-          "startingLine": 49
+          "startingLine": 51
         }
       },
       {
@@ -100,18 +100,10 @@
       },
       {
         "comment": "",
-        "key": "默认由你的数字分身先与其他家人的数字分身进行 social；只有遇到问题时，才把 issue 提给本人确认。",
-        "location": {
-          "startingColumn": 18,
-          "startingLine": 128
-        }
-      },
-      {
-        "comment": "",
         "key": "切回本人在线",
         "location": {
           "startingColumn": 24,
-          "startingLine": 158
+          "startingLine": 175
         }
       },
       {
@@ -119,7 +111,7 @@
         "key": "模拟长时间未登录",
         "location": {
           "startingColumn": 24,
-          "startingLine": 165
+          "startingLine": 182
         }
       },
       {
@@ -127,7 +119,7 @@
         "key": "当前托管状态",
         "location": {
           "startingColumn": 22,
-          "startingLine": 172
+          "startingLine": 189
         }
       },
       {
@@ -135,7 +127,7 @@
         "key": "最近本人接管：%@",
         "location": {
           "startingColumn": 22,
-          "startingLine": 180
+          "startingLine": 197
         }
       },
       {
@@ -143,7 +135,7 @@
         "key": "你已超过 72 小时未接管，数字分身已进入全托管模式。",
         "location": {
           "startingColumn": 24,
-          "startingLine": 176
+          "startingLine": 193
         }
       },
       {
@@ -151,55 +143,55 @@
         "key": "本人最近在线，当前策略为：%@。",
         "location": {
           "startingColumn": 24,
-          "startingLine": 177
+          "startingLine": 194
         }
       },
       {
         "comment": "",
-        "key": "当前没有需要你确认的问题，数字分身可以继续保持对外社交。",
+        "key": "当前没有需要你确认的问题。数字分身可以继续处理家人之间的日常互动。",
         "location": {
-          "startingColumn": 26,
-          "startingLine": 196
+          "startingColumn": 22,
+          "startingLine": 218
         }
       },
       {
         "comment": "",
-        "key": "待确认 issue",
+        "key": "待确认与最近代办",
         "location": {
-          "startingColumn": 26,
-          "startingLine": 187
+          "startingColumn": 22,
+          "startingLine": 209
         }
       },
       {
         "comment": "",
         "key": "%lld",
         "location": {
-          "startingColumn": 26,
-          "startingLine": 190
+          "startingColumn": 22,
+          "startingLine": 212
         }
       },
       {
         "comment": "",
         "key": "建议回复：%@",
         "location": {
-          "startingColumn": 34,
-          "startingLine": 207
+          "startingColumn": 30,
+          "startingLine": 229
         }
       },
       {
         "comment": "",
         "key": "确认发送",
         "location": {
-          "startingColumn": 40,
-          "startingLine": 211
+          "startingColumn": 36,
+          "startingLine": 233
         }
       },
       {
         "comment": "",
         "key": "本人接管",
         "location": {
-          "startingColumn": 40,
-          "startingLine": 218
+          "startingColumn": 36,
+          "startingLine": 240
         }
       }
     ]

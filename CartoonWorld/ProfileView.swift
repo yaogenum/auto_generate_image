@@ -13,9 +13,11 @@ struct ProfileView: View {
         ScrollView {
             VStack(alignment: .leading, spacing: 18) {
                 profileCard
+                proxyControlPanel
+                recentProxyActivityPanel
 
                 VStack(alignment: .leading, spacing: 12) {
-                    Text("注册数字人身份")
+                    Text("身份档案")
                         .font(.headline)
 
                     TextField("名字", text: $displayName)
@@ -53,8 +55,6 @@ struct ProfileView: View {
                 }
                 .padding(14)
                 .background(Color(uiColor: .secondarySystemGroupedBackground), in: RoundedRectangle(cornerRadius: 8))
-
-                proxyControlPanel
 
                 worldStats
             }
@@ -125,9 +125,26 @@ struct ProfileView: View {
             Text("我与数字分身")
                 .font(.headline)
 
-            Text("默认由你的数字分身先与其他家人的数字分身进行 social；只有遇到问题时，才把 issue 提给本人确认。")
-                .font(.caption)
-                .foregroundStyle(.secondary)
+            HStack(spacing: 10) {
+                ProxyStatusCard(
+                    title: "当前回复方",
+                    value: world.effectiveSelfProxyMode.rawValue,
+                    symbol: world.isSelfProxyFullyDelegated ? "bolt.badge.automatic" : "person.wave.2.fill",
+                    tint: world.effectiveSelfProxyMode == .human ? .blue : .mint
+                )
+                ProxyStatusCard(
+                    title: "待确认",
+                    value: "\(world.openAgentIssueCount)",
+                    symbol: "checklist",
+                    tint: world.openAgentIssueCount > 0 ? .orange : .green
+                )
+            }
+
+            Text(world.isSelfProxyFullyDelegated
+                 ? "你已超过 72 小时未接管，数字分身进入全托管。"
+                 : world.effectiveSelfProxyMode.detail)
+            .font(.caption)
+            .foregroundStyle(.secondary)
 
             VStack(alignment: .leading, spacing: 8) {
                 ForEach(SelfProxyMode.allCases, id: \.self) { mode in
@@ -181,49 +198,89 @@ struct ProfileView: View {
                     .font(.caption2)
                     .foregroundStyle(.secondary)
             }
+        }
+        .padding(14)
+        .background(Color(uiColor: .secondarySystemGroupedBackground), in: RoundedRectangle(cornerRadius: 8))
+    }
 
-            VStack(alignment: .leading, spacing: 8) {
-                HStack {
-                    Text("待确认 issue")
-                        .font(.subheadline.weight(.semibold))
-                    Spacer()
-                    Text("\(world.openAgentIssueCount)")
-                        .font(.caption2.weight(.bold))
-                        .foregroundStyle(.orange)
+    private var recentProxyActivityPanel: some View {
+        VStack(alignment: .leading, spacing: 10) {
+            HStack {
+                Text("待确认与最近代办")
+                    .font(.headline)
+                Spacer()
+                Text("\(world.openAgentIssueCount)")
+                    .font(.caption2.weight(.bold))
+                    .foregroundStyle(.orange)
+            }
+
+            if world.openAgentIssues.isEmpty {
+                Text("当前没有需要你确认的问题。数字分身可以继续处理家人之间的日常互动。")
+                    .font(.caption)
+                    .foregroundStyle(.secondary)
+            } else {
+                ForEach(world.openAgentIssues.prefix(3)) { issue in
+                    VStack(alignment: .leading, spacing: 6) {
+                        Text(world.familyMemberName(for: issue.memberID))
+                            .font(.caption2.weight(.bold))
+                            .foregroundStyle(.mint)
+                        Text(issue.prompt)
+                            .font(.caption)
+                        Text("建议回复：\(issue.suggestedReply)")
+                            .font(.caption2)
+                            .foregroundStyle(.secondary)
+                        HStack(spacing: 6) {
+                            Button("确认发送") {
+                                world.approveIssue(issue.id)
+                            }
+                            .buttonStyle(.borderedProminent)
+                            .tint(.mint)
+                            .controlSize(.mini)
+
+                            Button("本人接管") {
+                                world.deferIssueToHuman(issue.id)
+                            }
+                            .buttonStyle(.bordered)
+                            .controlSize(.mini)
+                        }
+                    }
+                    .padding(10)
+                    .background(Color.orange.opacity(0.08), in: RoundedRectangle(cornerRadius: 10))
                 }
+            }
 
-                if world.openAgentIssues.isEmpty {
-                    Text("当前没有需要你确认的问题，数字分身可以继续保持对外社交。")
-                        .font(.caption)
-                        .foregroundStyle(.secondary)
-                } else {
-                    ForEach(world.openAgentIssues.prefix(3)) { issue in
-                        VStack(alignment: .leading, spacing: 6) {
-                            Text(world.familyMemberName(for: issue.memberID))
-                                .font(.caption2.weight(.bold))
-                                .foregroundStyle(.mint)
-                            Text(issue.prompt)
-                                .font(.caption)
-                            Text("建议回复：\(issue.suggestedReply)")
+            let recentMessages = world.familyMembers
+                .filter { !$0.isSelf }
+                .compactMap { member -> (FamilyMember, FamilyMessage)? in
+                    guard let latest = (world.conversations[member.id] ?? []).sorted(by: { $0.createdAt > $1.createdAt }).first else {
+                        return nil
+                    }
+                    return (member, latest)
+                }
+                .sorted { $0.1.createdAt > $1.1.createdAt }
+                .prefix(3)
+
+            if !recentMessages.isEmpty {
+                Divider()
+
+                ForEach(Array(recentMessages), id: \.0.id) { member, message in
+                    HStack(alignment: .top, spacing: 8) {
+                        Image(systemName: message.isFromSelf ? "paperplane.fill" : "tray.and.arrow.down.fill")
+                            .font(.caption)
+                            .foregroundStyle(message.isFromSelf ? .mint : .secondary)
+                            .frame(width: 24, height: 24)
+                            .background(Color(uiColor: .tertiarySystemGroupedBackground), in: Circle())
+
+                        VStack(alignment: .leading, spacing: 3) {
+                            Text(member.name)
+                                .font(.caption.weight(.semibold))
+                            Text(message.text)
                                 .font(.caption2)
                                 .foregroundStyle(.secondary)
-                            HStack(spacing: 6) {
-                                Button("确认发送") {
-                                    world.approveIssue(issue.id)
-                                }
-                                .buttonStyle(.borderedProminent)
-                                .tint(.mint)
-                                .controlSize(.mini)
-
-                                Button("本人接管") {
-                                    world.deferIssueToHuman(issue.id)
-                                }
-                                .buttonStyle(.bordered)
-                                .controlSize(.mini)
-                            }
+                                .lineLimit(2)
                         }
-                        .padding(10)
-                        .background(Color.orange.opacity(0.08), in: RoundedRectangle(cornerRadius: 10))
+
+                        Spacer()
                     }
                 }
             }
@@ -237,6 +294,36 @@ struct ProfileView: View {
         identity = world.profile.identity
         homeDistrict = world.profile.homeDistrict
         motto = world.profile.motto
+    }
+}
+
+private struct ProxyStatusCard: View {
+    let title: String
+    let value: String
+    let symbol: String
+    let tint: Color
+
+    var body: some View {
+        HStack(spacing: 8) {
+            Image(systemName: symbol)
+                .font(.headline)
+                .foregroundStyle(tint)
+                .frame(width: 30, height: 30)
+                .background(tint.opacity(0.13), in: Circle())
+
+            VStack(alignment: .leading, spacing: 2) {
+                Text(title)
+                    .font(.caption)
+                    .foregroundStyle(.secondary)
+                Text(value)
+                    .font(.subheadline.weight(.semibold))
+            }
+
+            Spacer(minLength: 0)
+        }
+        .padding(10)
+        .frame(maxWidth: .infinity, alignment: .leading)
+        .background(Color(uiColor: .tertiarySystemGroupedBackground), in: RoundedRectangle(cornerRadius: 8))
     }
 }
 

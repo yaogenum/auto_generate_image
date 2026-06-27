@@ -7,7 +7,7 @@
         "key": "家人",
         "location": {
           "startingColumn": 34,
-          "startingLine": 80
+          "startingLine": 81
         }
       },
       {
@@ -15,7 +15,7 @@
         "key": "家人",
         "location": {
           "startingColumn": 30,
-          "startingLine": 82
+          "startingLine": 83
         }
       },
       {
@@ -23,7 +23,7 @@
         "key": "卡通世界",
         "location": {
           "startingColumn": 34,
-          "startingLine": 98
+          "startingLine": 99
         }
       },
       {
@@ -31,39 +31,47 @@
         "key": "世界",
         "location": {
           "startingColumn": 30,
-          "startingLine": 101
+          "startingLine": 102
         }
       },
       {
         "comment": "",
-        "key": "融入地图",
+        "key": "记录 Moment",
         "location": {
           "startingColumn": 38,
-          "startingLine": 106
+          "startingLine": 107
         }
       },
       {
         "comment": "",
-        "key": "上传",
+        "key": "记录",
         "location": {
           "startingColumn": 30,
-          "startingLine": 108
+          "startingLine": 109
         }
       },
       {
         "comment": "",
-        "key": "数字人",
+        "key": "分身控制台",
         "location": {
           "startingColumn": 38,
-          "startingLine": 113
+          "startingLine": 114
         }
       },
       {
         "comment": "",
-        "key": "身份",
+        "key": "分身",
         "location": {
           "startingColumn": 30,
-          "startingLine": 115
+          "startingLine": 116
+        }
+      },
+      {
+        "comment": "",
+        "key": "巡检 %@",
+        "location": {
+          "startingColumn": 15,
+          "startingLine": 413
         }
       }
     ]

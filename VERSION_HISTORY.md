@@ -2,6 +2,92 @@
 
 This file records product and implementation iterations for the Cartoon World iOS app.
 
+## 0.3.14 - 2026-06-23
+
+### Scope
+
+修复家人页视觉重复和底部输入区拥挤问题。
+
+### Changed
+
+- 删除家人页右上角重复的家人管理工具栏入口，避免和当前家人 Tab/页面主入口语义重复。
+- 增加紧凑聊天卡片与展开聊天卡片的底部间距，避免输入框和底部 TabBar 贴近或重叠。
+
+### Verification
+
+- `./scripts/build_ios.sh` 成功。
+- 已安装到当前 Booted Simulator 并截图验证：
+  - `artifacts/family-spacing-0.3.14-wait.png`
+  - 顶部右侧重复家人入口已删除。
+  - 底部输入框与 TabBar 已拉开间距。
+
+## 0.3.13 - 2026-06-22
+
+### Scope
+
+补强功能巡检链路：在无法使用真实 Simulator 点击工具时，把自动动线做成可观察的阶段化巡检，确保每个核心页面都能被截图和人工复核。
+
+### Changed
+
+- 自动巡检增加 8 个阶段标记：
+  - 家人关系网络
+  - 分身代聊
+  - 东京地点
+  - 大阪 Moments
+  - 香港家人互动
+  - 记录 Moment
+  - 分身控制台
+  - 回到家人
+- 自动巡检期间左上角显示 `巡检` 状态徽标，方便截图判断当前覆盖的功能动线。
+- 世界页支持运行时响应巡检传入的城市、展示模式、面板、POI 状态，不再只依赖启动时初始值。
+
+### Verification
+
+- `./scripts/build_ios.sh` 成功。
+- `./scripts/capture_screenshots.sh && ./scripts/qa_verify_screenshots.sh` 成功：
+  - `PASS_COUNT=17`
+  - `FAIL_COUNT=0`
+  - `RESULT=OK`
+- 自动动线巡检通过：
+  - 输出目录：`artifacts/function-check-0.3.13b/`
+  - 拼图：`artifacts/function-check-0.3.13b/contact-sheet.png`
+  - 覆盖家人关系网络、分身代聊、东京地点、大阪 Moments、香港家人互动、记录 Moment、分身控制台、回到家人。
+
+## 0.3.12 - 2026-06-22
+
+### Scope
+
+围绕整体功能做全面简化：将产品动线收敛为“家人关系 → 地点世界 → Moment 记录 → 分身控制台”，减少世界页和身份页的信息混杂。
+
+### Changed
+
+- Tab 信息架构简化：
+  - `上传` 改为 `记录`，聚焦创建地点 Moment。
+  - `身份` 改为 `分身`，聚焦我的数字分身控制台。
+- 世界页三面板收敛：
+  - `探索` 改为 `地点`，只负责城市/渲染/POI/图片合集。
+  - `Moments` 只负责地点时刻列表和城市热区。
+  - `关系网络` 改为 `家人互动`，只负责当前地点关联家人、聊天摘要和去聊天入口。
+- 上传/记录页闭环：
+  - 上传照片/视频后同时创建地图素材和一条 `FamilyMoment`。
+  - 按当前地点绑定到世界页，自动进入地图/Moments/家人互动链路。
+- 分身页重排：
+  - 代理策略与待确认 issue 前置。
+  - 身份资料退到“身份档案”区域。
+  - 新增最近代办/最近家人消息摘要，强化“我的分身控制台”定位。
+- QA 参数兼容：
+  - `CARTOON_INITIAL_WORLD_PANEL_SECTION` 兼容旧值 `探索/关系网络` 和新值 `地点/家人互动`。
+  - 截图脚本同步使用新面板文案。
+
+### Verification
+
+- `./scripts/build_ios.sh` 成功。
+- `./scripts/capture_screenshots.sh` 成功。
+- `./scripts/qa_verify_screenshots.sh` 成功：
+  - `PASS_COUNT=17`
+  - `FAIL_COUNT=0`
+  - `RESULT=OK`
+
 ## 0.3.11 - 2026-06-21
 
 ### Scope
