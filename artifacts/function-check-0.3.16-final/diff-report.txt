@@ -1,0 +1,13 @@
+t01.png->t02.png: 0.00%
+t02.png->t03.png: 28.59%
+t03.png->t04.png: 6.71%
+t04.png->t05.png: 8.47%
+t05.png->t06.png: 6.32%
+t06.png->t07.png: 93.98%
+t07.png->t08.png: 77.08%
+t08.png->t09.png: 87.93%
+t09.png->t10.png: 32.38%
+t10.png->t11.png: 0.00%
+t11.png->t12.png: 33.22%
+t12.png->t13.png: 1.33%
+t13.png->t14.png: 0.00%

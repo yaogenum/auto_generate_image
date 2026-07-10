@@ -72,7 +72,7 @@ struct FamilyHubView: View {
             Group {
                 if contactLayout == .topology {
                     topologyContactGraph(world: world)
-                        .frame(height: 220)
+                        .frame(height: 232)
                 } else {
                     contactRibbon(world: world)
                         .frame(height: 140)
@@ -164,7 +164,7 @@ struct FamilyHubView: View {
                 .padding(.top, 10)
                 .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .top)
             } else if let selfMember {
-                let center = CGPoint(x: geometry.size.width * 0.5, y: geometry.size.height * 0.42)
+                let center = CGPoint(x: geometry.size.width * 0.5, y: geometry.size.height * 0.36)
                 let addNodeOffset = CGPoint(x: 0.82, y: 0.16)
                 let layout = topologyLayout(for: others, size: geometry.size, center: center)
 
@@ -175,12 +175,17 @@ struct FamilyHubView: View {
                         for edge in edges {
                             guard let targetLayout = layout[edge.targetMemberID] else { continue }
                             let source = topologySourcePoint(from: selfPoint, to: targetLayout.point)
-                            let path = topologyFoldedPath(from: source, to: targetLayout.point, row: targetLayout.row)
+                            let path = topologySoftPath(from: source, to: targetLayout.point, row: targetLayout.row)
 
                             context.stroke(
                                 path,
-                                with: .color(Color(uiColor: .systemGray4)),
-                                style: StrokeStyle(lineWidth: 1.4, lineCap: .round)
+                                with: .color(Color.mint.opacity(0.24)),
+                                style: StrokeStyle(lineWidth: 7, lineCap: .round, lineJoin: .round)
+                            )
+                            context.stroke(
+                                path,
+                                with: .color(Color.mint.opacity(0.58)),
+                                style: StrokeStyle(lineWidth: 1.8, lineCap: .round, lineJoin: .round)
                             )
                         }
 
@@ -188,7 +193,7 @@ struct FamilyHubView: View {
                             x: geometry.size.width * addNodeOffset.x,
                             y: geometry.size.height * addNodeOffset.y
                         )
-                        let addPath = topologyFoldedPath(
+                        let addPath = topologySoftPath(
                             from: topologySourcePoint(from: selfPoint, to: addPoint),
                             to: addPoint,
                             row: layout.count + 1
@@ -210,7 +215,7 @@ struct FamilyHubView: View {
                     }
 
                     ForEach(others) { member in
-                            if let layoutNode = layout[member.id] {
+                        if let layoutNode = layout[member.id] {
                             familyTopologyNode(
                                 member: member,
                                 isSelected: member.id == world.selectedFamilyMemberID,
@@ -239,7 +244,21 @@ struct FamilyHubView: View {
             }
         }
         .padding(6)
-        .background(Color(uiColor: .secondarySystemGroupedBackground), in: RoundedRectangle(cornerRadius: 12))
+        .background(
+            LinearGradient(
+                colors: [
+                    Color(uiColor: .secondarySystemGroupedBackground),
+                    Color.mint.opacity(0.07)
+                ],
+                startPoint: .topLeading,
+                endPoint: .bottomTrailing
+            ),
+            in: RoundedRectangle(cornerRadius: 14)
+        )
+        .overlay {
+            RoundedRectangle(cornerRadius: 14)
+                .stroke(Color.white.opacity(0.56), lineWidth: 1)
+        }
     }
 
     private func topologyLayout(
@@ -258,8 +277,8 @@ struct FamilyHubView: View {
         let availableWidth = max(size.width - 24, 120)
         let rowInset: CGFloat = 16
         let rowWidth = availableWidth - rowInset * 2
-        let baselineY = min(center.y + 74, max(88, size.height * 0.5))
-        let maxY = size.height - 34
+        let baselineY = min(center.y + 100, max(96, size.height * 0.54))
+        let maxY = size.height - 42
 
         for (index, member) in sorted.enumerated() {
             let row = index / columns
@@ -275,6 +294,9 @@ struct FamilyHubView: View {
                 } else {
                     x = center.x
                 }
+            } else if rowCount == 2 {
+                let spacing = min(size.width * 0.28, 170)
+                x = center.x + (layoutCol == 0 ? -spacing : spacing)
             } else {
                 x = rowInset + rowWidth * (CGFloat(layoutCol + 1) / CGFloat(rowCount + 1))
             }
@@ -285,22 +307,22 @@ struct FamilyHubView: View {
         return positions
     }
 
-    private func topologyFoldedPath(from source: CGPoint, to target: CGPoint, row: Int) -> Path {
-        let railDirection: CGFloat = row.isMultiple(of: 2) ? 1 : -1
-        let railOffset = 38 + CGFloat(row) * 11
-        let foldY = max(source.y + 22, min(target.y - 12, source.y + 32 + CGFloat(row) * 10))
-        let foldX = target.x + (railDirection * min(railOffset, 72))
+    private func topologySoftPath(from source: CGPoint, to target: CGPoint, row: Int) -> Path {
+        let direction: CGFloat = target.x >= source.x ? 1 : -1
+        let rowDrift = CGFloat(row) * 8
+        let verticalDistance = max(38, target.y - source.y)
+        let firstControl = CGPoint(
+            x: source.x + direction * (30 + rowDrift),
+            y: source.y + verticalDistance * 0.28
+        )
+        let secondControl = CGPoint(
+            x: target.x - direction * (42 + rowDrift),
+            y: target.y - verticalDistance * 0.34
+        )
 
         var path = Path()
         path.move(to: source)
-        path.addLine(to: CGPoint(x: source.x, y: foldY))
-        if abs(foldX - source.x) > 4 {
-            path.addLine(to: CGPoint(x: foldX, y: foldY))
-        }
-        if abs(target.y - foldY) > 4 {
-            path.addLine(to: CGPoint(x: foldX, y: target.y))
-        }
-        path.addLine(to: target)
+        path.addCurve(to: target, control1: firstControl, control2: secondControl)
         return path
     }
 
@@ -341,7 +363,7 @@ struct FamilyHubView: View {
                     .font(.caption2)
                     .multilineTextAlignment(.center)
                     .lineLimit(2)
-                    .offset(y: 26)
+                    .offset(x: 42, y: 0)
             }
         }
         .buttonStyle(.plain)
@@ -358,42 +380,48 @@ struct FamilyHubView: View {
         issueCount: Int = 0,
         onTap: (() -> Void)? = nil
     ) -> some View {
-        let radius: CGFloat = isSelf ? 30 : 30
+        let radius: CGFloat = isSelf ? 28 : 25
+        let nodeColor = isSelf ? Color.mint : (endpoint?.presenceColor ?? .mint)
 
         return Button(action: onTap ?? {}) {
             VStack(spacing: 4) {
                 ZStack {
                     Circle()
-                        .fill(isSelf ? Color.mint.opacity(0.38) : (isSelected ? Color.blue.opacity(0.2) : Color(uiColor: .systemFill)))
+                        .fill(isSelf ? Color.mint.opacity(0.38) : nodeColor.opacity(isSelected ? 0.24 : 0.13))
                         .frame(width: radius * (isSelf ? 2.35 : 2), height: radius * (isSelf ? 2.35 : 2))
+                        .overlay {
+                            Circle()
+                                .stroke(isSelected ? nodeColor.opacity(0.78) : Color.white.opacity(0.7), lineWidth: isSelected ? 2 : 1)
+                        }
+                        .shadow(color: nodeColor.opacity(isSelected || isSelf ? 0.22 : 0.08), radius: isSelected ? 10 : 6, x: 0, y: 4)
 
                     if isSelf {
                         Text("我")
                             .font(.caption2.weight(.semibold))
                             .foregroundStyle(.white)
-                    } else if issueCount > 0 {
+                    } else {
+                        Image(systemName: endpoint?.presenceSymbol ?? "person.fill")
+                            .font(.caption.weight(.semibold))
+                            .foregroundStyle(nodeColor)
+                    }
+
+                    if issueCount > 0 {
                         Text("\(issueCount)")
                             .font(.caption2.weight(.bold))
                             .foregroundStyle(.orange)
                             .padding(.horizontal, 5)
                             .padding(.vertical, 2)
                             .background(.thinMaterial, in: Capsule())
-                            .offset(x: radius * 0.45, y: -radius * 0.55)
+                            .offset(x: radius * 0.55, y: -radius * 0.6)
                     }
                 }
 
-                Text(member.name)
-                    .font(isSelf ? .caption.weight(.semibold) : .caption2.weight(.semibold))
-                    .lineLimit(1)
-                    .foregroundStyle(.primary)
-                    .padding(.horizontal, isSelf ? 8 : 0)
-                    .padding(.vertical, isSelf ? 2 : 0)
-                    .background(
-                        isSelf
-                            ? Color(uiColor: .systemBackground).opacity(0.94)
-                            : .clear,
-                        in: Capsule()
-                    )
+                if !isSelf {
+                    Text(member.name)
+                        .font(.caption2.weight(.semibold))
+                        .lineLimit(1)
+                        .foregroundStyle(.primary)
+                }
 
                 if let relationLabel {
                     Text(relationLabel)
@@ -416,7 +444,7 @@ struct FamilyHubView: View {
     private func compactChatPanel(world: WorldModel) -> some View {
         VStack(spacing: 8) {
             chatHeader(world: world, expanded: false)
-            chatStrategyBanner(world: world, expanded: false)
+            relationshipStatusStrip(world: world, expanded: false)
             issueQueue(world: world, expanded: false)
             chatScroller(world: world, expanded: false)
             messageComposer(world: world, compact: true)
@@ -431,6 +459,7 @@ struct FamilyHubView: View {
     private func expandedChatPanel(world: WorldModel) -> some View {
         VStack(spacing: 10) {
             chatHeader(world: world, expanded: true)
+            relationshipStatusStrip(world: world, expanded: true)
             chatStrategyBanner(world: world, expanded: true)
             issueQueue(world: world, expanded: true)
             chatScroller(world: world, expanded: true)
@@ -442,6 +471,94 @@ struct FamilyHubView: View {
         .padding(.bottom, 18)
         .layoutPriority(1)
         .animation(.easeInOut(duration: 0.2), value: world.isFamilyChatExpanded)
+    }
+
+    private func relationshipStatusStrip(world: WorldModel, expanded: Bool) -> some View {
+        let items = relationshipStatusItems(world: world, expanded: expanded)
+
+        return Group {
+            if expanded {
+                PillFlowLayout(spacing: 6, rowSpacing: 6) {
+                    ForEach(items) { item in
+                        RelationshipPill(title: item.title, symbolName: item.symbolName, tint: item.tint)
+                    }
+                }
+            } else {
+                ScrollView(.horizontal, showsIndicators: false) {
+                    HStack(spacing: 6) {
+                        ForEach(items) { item in
+                            RelationshipPill(title: item.title, symbolName: item.symbolName, tint: item.tint)
+                        }
+                    }
+                    .padding(.horizontal, 2)
+                }
+            }
+        }
+        .frame(maxWidth: .infinity, alignment: .leading)
+        .padding(8)
+        .background(Color(uiColor: .secondarySystemGroupedBackground).opacity(0.82), in: RoundedRectangle(cornerRadius: 12))
+    }
+
+    private func relationshipStatusItems(world: WorldModel, expanded: Bool) -> [RelationshipPillItem] {
+        let selectedMember = world.selectedFamilyMember
+        let issueCount = selectedMember.isSelf ? world.openAgentIssueCount : world.openIssueCount(for: selectedMember.id)
+        let momentCount = selectedMember.isSelf ? world.allMoments.count : world.momentsForSelectedMember.count
+        let endpoint = world.contactEndpoint(for: selectedMember.id)
+
+        var items: [RelationshipPillItem] = [
+            RelationshipPillItem(
+                title: selectedMember.isSelf ? "我的分身" : selectedMember.relationForSelfNarrative,
+                symbolName: selectedMember.isSelf ? "person.crop.circle.badge.checkmark" : "heart.text.square.fill",
+                tint: .mint
+            )
+        ]
+
+        if selectedMember.isSelf {
+            items.append(
+                RelationshipPillItem(
+                    title: world.effectiveSelfProxyMode.rawValue,
+                    symbolName: world.isSelfProxyFullyDelegated ? "bolt.horizontal.circle.fill" : "brain.head.profile",
+                    tint: world.isSelfProxyFullyDelegated ? .orange : .teal
+                )
+            )
+        } else {
+            items.append(
+                RelationshipPillItem(
+                    title: endpoint.presenceTitle,
+                    symbolName: endpoint.presenceSymbol,
+                    tint: endpoint.presenceColor
+                )
+            )
+            items.append(
+                RelationshipPillItem(
+                    title: world.effectiveSelfProxyMode.rawValue,
+                    symbolName: "brain.head.profile",
+                    tint: .teal
+                )
+            )
+        }
+
+        if expanded || issueCount > 0 {
+            items.append(
+                RelationshipPillItem(
+                    title: issueCount > 0 ? "待确认 \(issueCount)" : selectedMember.weeklyChatLabel,
+                    symbolName: issueCount > 0 ? "exclamationmark.bubble.fill" : "calendar.badge.clock",
+                    tint: issueCount > 0 ? .orange : .blue
+                )
+            )
+        }
+
+        if expanded {
+            items.append(
+                RelationshipPillItem(
+                    title: "Moments \(momentCount)",
+                    symbolName: "photo.on.rectangle.angled",
+                    tint: .purple
+                )
+            )
+        }
+
+        return items
     }
 
     private func chatHeader(world: WorldModel, expanded: Bool) -> some View {
@@ -777,7 +894,7 @@ struct FamilyHubView: View {
                     }
                 }
             }
-            .frame(minHeight: expanded ? 220 : 120, maxHeight: expanded ? .infinity : 150)
+            .frame(minHeight: expanded ? 220 : 92, maxHeight: expanded ? .infinity : 126)
             .padding(8)
             .background(Color(uiColor: .secondarySystemGroupedBackground), in: RoundedRectangle(cornerRadius: 10))
         }
@@ -875,6 +992,90 @@ struct FamilyHubView: View {
             world.appendSystemMessage(member.id, text: "已发起\(type)沟通")
         } else {
             world.appendSystemMessage(member.id, text: "联系方式格式不正确")
+        }
+    }
+}
+
+private struct RelationshipPill: View {
+    let title: String
+    let symbolName: String
+    let tint: Color
+
+    var body: some View {
+        HStack(spacing: 4) {
+            Image(systemName: symbolName)
+                .font(.caption2.weight(.bold))
+            Text(title)
+                .font(.caption2.weight(.semibold))
+                .lineLimit(1)
+        }
+        .foregroundStyle(tint)
+        .padding(.horizontal, 7)
+        .padding(.vertical, 4)
+        .background(tint.opacity(0.12), in: Capsule())
+    }
+}
+
+private struct RelationshipPillItem: Identifiable {
+    let title: String
+    let symbolName: String
+    let tint: Color
+
+    var id: String {
+        "\(symbolName)-\(title)"
+    }
+}
+
+private struct PillFlowLayout: Layout {
+    let spacing: CGFloat
+    let rowSpacing: CGFloat
+
+    func sizeThatFits(proposal: ProposedViewSize, subviews: Subviews, cache: inout ()) -> CGSize {
+        let maxWidth = proposal.width ?? .greatestFiniteMagnitude
+        var rowWidth: CGFloat = 0
+        var rowHeight: CGFloat = 0
+        var totalWidth: CGFloat = 0
+        var totalHeight: CGFloat = 0
+
+        for subview in subviews {
+            let size = subview.sizeThatFits(.unspecified)
+            let nextWidth = rowWidth == 0 ? size.width : rowWidth + spacing + size.width
+
+            if nextWidth > maxWidth, rowWidth > 0 {
+                totalWidth = max(totalWidth, rowWidth)
+                totalHeight += rowHeight + rowSpacing
+                rowWidth = size.width
+                rowHeight = size.height
+            } else {
+                rowWidth = nextWidth
+                rowHeight = max(rowHeight, size.height)
+            }
+        }
+
+        totalWidth = max(totalWidth, rowWidth)
+        totalHeight += rowHeight
+        return CGSize(width: min(totalWidth, maxWidth), height: totalHeight)
+    }
+
+    func placeSubviews(in bounds: CGRect, proposal: ProposedViewSize, subviews: Subviews, cache: inout ()) {
+        var x = bounds.minX
+        var y = bounds.minY
+        var rowHeight: CGFloat = 0
+
+        for subview in subviews {
+            let size = subview.sizeThatFits(.unspecified)
+            if x > bounds.minX, x + size.width > bounds.maxX {
+                x = bounds.minX
+                y += rowHeight + rowSpacing
+                rowHeight = 0
+            }
+
+            subview.place(
+                at: CGPoint(x: x, y: y),
+                proposal: ProposedViewSize(width: size.width, height: size.height)
+            )
+            x += size.width + spacing
+            rowHeight = max(rowHeight, size.height)
         }
     }
 }

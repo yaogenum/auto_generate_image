@@ -39,6 +39,9 @@ fi
 RUNTIME_ID="$(xcrun simctl list runtimes available | awk '/com.apple.CoreSimulator.SimRuntime.iOS/ {print $NF; exit}')"
 
 "$ROOT_DIR/scripts/build_ios.sh"
+if [[ -x "$ROOT_DIR/scripts/prepare_slim_image_bundle.sh" ]]; then
+  "$ROOT_DIR/scripts/prepare_slim_image_bundle.sh"
+fi
 
 SIM_ID="$(xcrun simctl list devices booted | awk -v name="$SIM_NAME" '
   $0 ~ name && /Booted/ {

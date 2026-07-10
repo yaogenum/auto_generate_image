@@ -25,7 +25,7 @@ EXPECTED=(
   profile.png
 )
 
-MIN_SIZE_BYTES=60000
+MIN_SIZE_BYTES=150000
 seen_file="$(mktemp)"
 trap 'rm -f "$seen_file"' EXIT
 
@@ -62,7 +62,7 @@ trap 'rm -f "$seen_file"' EXIT
       continue
     fi
 
-    if grep -Fxq "$hash $name" "$seen_file"; then
+    if awk -v h="$hash" '$1==h {found=1} END {exit found ? 0 : 1}' "$seen_file"; then
       first="$(awk -v h="$hash" '$1==h {print $2; exit}' "$seen_file")"
       echo "FAIL duplicate-hash: $name 与 ${first:-?}"
       ((fail+=1))

@@ -2,6 +2,175 @@
 
 This file records product and implementation iterations for the Cartoon World iOS app.
 
+## 0.3.19 - 2026-07-10
+
+### Scope
+
+继续检查是否还有可优化点。本轮发现家人展开态的状态条虽然可横滑，但截图中会出现右侧硬截断，信息可见性不够直接，因此做一处小范围交互优化。
+
+### Changed
+
+- 家人会话状态条：
+  - 紧凑态继续保持横向滚动，避免占用聊天高度。
+  - 展开态改为自适应换行的 pill 布局，完整展示“我的分身/对方状态/分身代答/固定聊天/Moments”等状态。
+  - 新增 `PillFlowLayout`，让状态标签按可用宽度自然换行。
+- 代码维护：
+  - 移除已不再使用的旧折线路径函数，保留当前柔和曲线路径实现。
+  - 修正家人拓扑节点循环中的缩进，降低后续维护噪音。
+
+### Verification
+
+- `./scripts/build_ios.sh` 成功。
+- `./scripts/capture_screenshots.sh && ./scripts/qa_verify_screenshots.sh` 成功：
+  - `PASS_COUNT=17`
+  - `FAIL_COUNT=0`
+  - `RESULT=OK`
+- 自动动线截图通过人工复核：
+  - 输出目录：`artifacts/function-check-0.3.19-final/`
+  - 拼图：`artifacts/function-check-0.3.19-final/contact-sheet.png`
+  - 差异报告：`artifacts/function-check-0.3.19-final/diff-report.txt`
+- 重点复核：
+  - `artifacts/screenshots/family_topology_expanded.png`：展开态状态条完整换行，不再截断。
+  - `artifacts/screenshots/family_topology_compact.png`：紧凑态仍不遮挡输入框。
+
+## 0.3.18 - 2026-07-07
+
+### Scope
+
+围绕“数字分身之间的家庭 social”继续优化家人页：让关系网络状态更像真实联系人在线状态，让紧凑会话保持可用并避免遮挡。
+
+### Changed
+
+- 家人拓扑网络：
+  - 非本人节点根据对方身份状态着色：真人在线/对方在线为绿色，本机模拟为青色，真人离线为红色。
+  - 非本人节点中心增加状态图标，让“对方身份状态”直接体现在关系网络里。
+  - issue 数量改为节点角标，不再挤占节点中心。
+- 家人会话卡片：
+  - 新增横向状态条，聚合“我的妈妈/我的分身、对方在线状态、我的分身代答状态、待确认 issue、Moments”等信息。
+  - 紧凑态隐藏大块“分身社交链路”说明，仅保留状态条；展开态继续显示完整说明和操作。
+  - 压缩紧凑态最近对话高度，修复输入框贴近底部 Tab、被遮挡的问题。
+- 保持整体视觉风格：
+  - 延续浅色、mint、圆角、软阴影的数字人/Agent 控制台风格，没有大幅改变主视觉。
+
+### Verification
+
+- 第一轮：编译与固定截图 QA 通过。
+  - `./scripts/build_ios.sh` 成功。
+  - `./scripts/capture_screenshots.sh && ./scripts/qa_verify_screenshots.sh` 成功：
+    - `PASS_COUNT=17`
+    - `FAIL_COUNT=0`
+    - `RESULT=OK`
+- 第二轮：自动动线截图通过人工复核。
+  - 输出目录：`artifacts/function-check-0.3.18-final/`
+  - 拼图：`artifacts/function-check-0.3.18-final/contact-sheet.png`
+  - 差异报告：`artifacts/function-check-0.3.18-final/diff-report.txt`
+  - 覆盖家人会话、世界地图、记录 Moment、分身控制台、回到家人。
+- 第三轮：重点截图人工复核通过。
+  - `artifacts/screenshots/family_topology_compact.png`：输入框完整露出，底部留白正常。
+  - `artifacts/screenshots/family_human_offline_status.png`：真人离线红色状态可区分。
+  - `artifacts/screenshots/family_call_tray_expanded.png`：语音/视频操作未遮挡输入框。
+  - `artifacts/screenshots/world_hk_moments_focus.png`：香港地点 Moments 能在世界面板展示。
+
+## 0.3.17 - 2026-07-04
+
+### Scope
+
+执行完整功能巡检，并重点优化家人关系网络，让拓扑展示更自然、顺畅、柔和。
+
+### Changed
+
+- 家人关系网络视觉优化：
+  - 关系线从硬折线改为柔和贝塞尔曲线。
+  - 连接线增加浅色光晕层和细主线，减少机械感。
+  - 拓扑底板增加轻微 mint 渐变和细边框，视觉上更接近一个柔和关系场。
+  - 节点增加轻微描边与阴影，选中节点更清晰但不突兀。
+  - 双家人布局左右拉开，减少节点互相贴近。
+  - 自己节点只保留圆心“我”，移除容易压住他人节点的姓名标签。
+  - “新增家人”标签移动到按钮右侧，避免覆盖妈妈节点。
+- 功能检查：
+  - 重新执行固定截图 QA，覆盖家人、世界五城、记录、分身等 17 个状态。
+  - 重新执行自动动线截图，覆盖家人关系网络、分身代聊、世界、多城地点、记录 Moment、分身控制台、回到家人。
+
+### Verification
+
+- `./scripts/build_ios.sh` 成功。
+- `./scripts/capture_screenshots.sh && ./scripts/qa_verify_screenshots.sh` 成功：
+  - `PASS_COUNT=17`
+  - `FAIL_COUNT=0`
+  - `RESULT=OK`
+- 自动动线巡检通过人工复核：
+  - 输出目录：`artifacts/function-check-0.3.17-final/`
+  - 拼图：`artifacts/function-check-0.3.17-final/contact-sheet.png`
+  - 差异报告：`artifacts/function-check-0.3.17-final/diff-report.txt`
+- 单独复核：
+  - `artifacts/screenshots/family_topology_compact.png`
+  - 家人节点、自己节点和新增家人入口无明显遮挡。
+
+## 0.3.16 - 2026-07-02
+
+### Scope
+
+执行一轮完整功能巡检，并针对巡检中发现的家人拓扑拥挤问题做轻量视觉优化。
+
+### Changed
+
+- 家人拓扑图：
+  - 拓扑区域高度从 220 调整为 232。
+  - 自己节点略上移，家人节点基线下移，减少“我 / 家人 / 关系标签”之间的贴近和重叠。
+  - 节点半径略缩小，保留原有浅色、圆形、状态徽标风格。
+- 功能检查：
+  - 重新执行固定截图 QA，覆盖家人、世界五城、记录、分身等 17 个状态。
+  - 重新执行自动动线截图，覆盖家人关系网络、分身代聊、世界、多城地点、记录 Moment、分身控制台、回到家人。
+
+### Verification
+
+- `./scripts/build_ios.sh` 成功。
+- `./scripts/capture_screenshots.sh && ./scripts/qa_verify_screenshots.sh` 成功：
+  - `PASS_COUNT=17`
+  - `FAIL_COUNT=0`
+  - `RESULT=OK`
+- 自动动线巡检通过人工复核：
+  - 输出目录：`artifacts/function-check-0.3.16-final/`
+  - 拼图：`artifacts/function-check-0.3.16-final/contact-sheet.png`
+  - 差异报告：`artifacts/function-check-0.3.16-final/diff-report.txt`
+- 观察项：
+  - 世界页自动动线中有一帧处于 MapKit 切换后的短暂灰底加载态，下一帧恢复真实地图；静态世界页截图均通过，不作为阻断问题。
+
+## 0.3.15 - 2026-06-28
+
+### Scope
+
+修复功能巡检误判，并优化模拟器安装包体积，让“逐个点击/截图质检”更可靠。
+
+### Changed
+
+- 截图巡检稳定性：
+  - `scripts/capture_screenshots.sh` 默认截图等待从 5s 调整为 12s，避免冷启动阶段把白屏/系统启动画面误记为页面截图。
+  - `scripts/qa_verify_screenshots.sh` 将最小截图体积阈值提高到 150KB。
+  - 修复重复截图检测逻辑，现在会按 hash 第一列判断重复，而不是只匹配完整行。
+- 模拟器素材瘦身：
+  - 新增 `scripts/prepare_slim_image_bundle.sh`，只处理构建后的 `.app/images`，不改动原始 `images/source`。
+  - 默认把模拟器 app 内素材缩到最长边 1200px 的缓存版本，地图地点图片合集仍可展示。
+  - `scripts/run_ios_sim.sh` 和 `scripts/capture_screenshots.sh` 自动执行瘦身步骤，可用 `CARTOON_PREPARE_SLIM_IMAGES=0` 关闭。
+- 功能检查产物：
+  - 新增本轮自动动线拼图，覆盖家人关系网络、分身代聊、世界、多城地点、记录 Moment、分身控制台、回到家人。
+
+### Verification
+
+- `bash -n scripts/prepare_slim_image_bundle.sh scripts/run_ios_sim.sh scripts/capture_screenshots.sh scripts/qa_verify_screenshots.sh` 成功。
+- 模拟器 app 包体积验证：
+  - `build/Debug-iphonesimulator/CartoonWorld.app`：57MB。
+  - `build/Debug-iphonesimulator/CartoonWorld.app/images`：44MB。
+  - 原始 `images/source`：969MB，未被修改。
+- `./scripts/capture_screenshots.sh && ./scripts/qa_verify_screenshots.sh` 成功：
+  - `PASS_COUNT=17`
+  - `FAIL_COUNT=0`
+  - `RESULT=OK`
+- 自动动线巡检通过人工复核：
+  - 输出目录：`artifacts/function-check-0.3.15-final/`
+  - 拼图：`artifacts/function-check-0.3.15-final/contact-sheet.png`
+  - 首两帧仍是 launch 后的短暂空白，但加载完成后家人、世界、记录、分身核心动线完整可用。
+
 ## 0.3.14 - 2026-06-23
 
 ### Scope

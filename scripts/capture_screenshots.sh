@@ -5,7 +5,7 @@ ROOT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 BUNDLE_ID="com.codex.CartoonWorld"
 APP_PATH="$ROOT_DIR/build/Debug-iphonesimulator/CartoonWorld.app"
 OUTPUT_DIR="$ROOT_DIR/artifacts/screenshots"
-SHOOT_DELAY_SECONDS="${CARTOON_SCREENSHOT_DELAY_SECONDS:-5.0}"
+SHOOT_DELAY_SECONDS="${CARTOON_SCREENSHOT_DELAY_SECONDS:-12.0}"
 mkdir -p "$OUTPUT_DIR"
 
 if [[ ! -d "$ROOT_DIR/CartoonWorld.xcodeproj" ]]; then
@@ -17,6 +17,10 @@ if [[ ! -d "$APP_PATH" ]]; then
   echo "App binary not found: $APP_PATH"
   echo "Run ./scripts/build_ios.sh first."
   exit 1
+fi
+
+if [[ -x "$ROOT_DIR/scripts/prepare_slim_image_bundle.sh" ]]; then
+  "$ROOT_DIR/scripts/prepare_slim_image_bundle.sh"
 fi
 
 SIM_ID="$(xcrun simctl list devices booted | awk '/(Booted)/ {
