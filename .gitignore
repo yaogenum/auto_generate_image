@@ -1,0 +1,27 @@
+# macOS
+.DS_Store
+
+# Local source image dump; curated app assets should live under tracked app folders.
+images/
+
+# Xcode and Swift build products
+build/
+DerivedData/
+*.xcworkspace/xcuserdata/
+*.xcodeproj/xcuserdata/
+*.xccheckout
+*.moved-aside
+*.xcuserstate
+
+# Swift Package Manager local state
+.build/
+.swiftpm/
+
+# Simulator and QA scratch captures.
+# Keep curated contact sheets and reports tracked explicitly when needed.
+artifacts/current-*.png
+artifacts/current-debug*.png
+artifacts/auto-*.png
+artifacts/auto-run-*.png
+artifacts/*-wait.png
+artifacts/function-check-*/t*.png
